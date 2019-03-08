@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<!-- major TODOs -->
+<!-- 1) figure out how to know which state is clicked -->
+<!-- 2) hide map after clicking on a state, show option for charts -->
+<!-- 3) actually read data -->
+
+<style>
+
+.states {
+  fill: #aaa;
+}
+
+.states :hover {
+  fill: orange;
+}
+
+.feature {
+  fill: #ccc;
+  cursor: pointer;
+}
+
+.feature.active {
+  fill: blue;
+}
+
+.state-borders {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+</style>
+<body>
+
+<!-- this is the "menu" svg, currently a blank grey box-->
+<svg width="300" height="600" id="svg1"></svg> 
+
+<!-- this is the map svg, which currently hovers orange and when clicked colors red until unclicked or another state is clicked-->
+<svg width="960" height="600" id="svg2"></svg> 
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script>
+
+<!-- "menu" code is here-->
+var svgContainer1 = d3.select("#svg1").append("svg")
+	.attr("width",960).attr("height",600);
+var rect1 = svgContainer1.append("rect").attr("x",10).attr("y",10).attr("width",100).attr("height",50).attr("fill", "#ccc")
+	.attr("label","Menu Goes Here?");
+	
+<!-- trying to add text to menu rect, not working yet-->
+var menuText = svgContainer1.selectAll("text").enter().append("text");
+var menuTextLabel = menuText.text("testing1").attr("font-family", "sans-serif")
+                 .attr("font-size", "20px")
+                 .attr("fill", "red");
+
+<!-- map code starts here-->
+var mapWidth = 960;
+var mapHeight = 500;
+var active = d3.select(null);
+
+var svg = d3.select("#svg2");
+
+<!-- var projection = d3.geoPath -->
+    <!-- .scale(1000) -->
+    <!-- .translate([mapWidth / 2, mapHeight / 2]); -->
+<!-- var path = d3.geoPath().projection(projection); -->
+var path = d3.geoPath();
+
+d3.json("https://d3js.org/us-10m.v1.json", function(error, us) {
+  if (error) throw error;
+
+  svg.append("g")
+      .attr("class", "states")
+    .selectAll("path")
+    .data(topojson.feature(us, us.objects.states).features)
+    .enter().append("path")
+      .attr("d", path)
+	  .on("click",clicked)
+	  .attr("class", "feature");
+
+  svg.append("path")
+      .attr("class", "state-borders")
+      .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
+});
+
+function clicked(d) {
+  if (active.node() === this) return reset();
+  alert("clicked");
+  active.classed("active", false);
+  active = d3.select(this).classed("active", true);
+  
+  <!-- the below code and some other stuff is needed for zooming, but doesnt currently work-->
+  
+  <!-- var bounds = path.bounds(d), -->
+      <!-- dx = bounds[1][0] - bounds[0][0], -->
+      <!-- dy = bounds[1][1] - bounds[0][1], -->
+      <!-- x = (bounds[0][0] + bounds[1][0]) / 2, -->
+      <!-- y = (bounds[0][1] + bounds[1][1]) / 2, -->
+      <!-- scale = .9 / Math.max(dx / mapWidth, dy / mapHeight), -->
+      <!-- translate = [mapWidth / 2 - scale * x, mapHeight / 2 - scale * y]; -->
+
+  <!-- svg.transition() -->
+      <!-- .duration(750) -->
+      <!-- .style("stroke-width", 1.5 / scale + "px") -->
+      <!-- .attr("transform", "translate(" + translate + ")scale(" + scale + ")"); -->
+}
+
+function reset() {
+  alert("reset");
+  active.classed("active", false);
+  active = d3.select(null);
+
+  svg.transition()
+      .duration(750)
+      .style("stroke-width", "1.5px")
+      .attr("transform", "");
+}
+
+</script>
