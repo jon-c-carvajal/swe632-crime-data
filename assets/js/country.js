@@ -1,9 +1,9 @@
 var width = 960,
     height = 500,
-    centered;
+    active = d3.select(null);
 
 var projection = d3.geo.albersUsa()
-    .scale(1070)
+    .scale(1000)
     .translate([width / 2, height / 2]);
 
 var path = d3.geo.path()
@@ -17,44 +17,50 @@ svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
-    .on("click", clicked);
+    .on("click", reset);
 
-var g = svg.append("g");
+var g = svg.append("g")
+    .style("stroke-width", "1.5px");
 
-g.append("g")
-    .attr("id", "states")
-  .selectAll("path")
-    .data(topojson.feature(us, us.objects.states).features)
-  .enter().append("path")
-    .attr("d", path)
-    .on("click", clicked);
+g.selectAll("path")
+.data(topojson.feature(us, us.objects.states).features)
+.enter().append("path")
+.attr("d", path)
+.attr("class", "feature")
+.on("click", clicked);
 
 g.append("path")
-    .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-    .attr("id", "state-borders")
-    .attr("d", path);
+.datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+.attr("class", "mesh")
+.attr("d", path);
 
 function clicked(d) {
-  var x, y, k;
+  if (active.node() === this) return reset();
+  console.log(d.id)
+  return
+  active.classed("active", false);
+  active = d3.select(this).classed("active", true);
 
-  if (d && centered !== d) {
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 4;
-    centered = d;
-  } else {
-    x = width / 2;
-    y = height / 2;
-    k = 1;
-    centered = null;
-  }
-
-  g.selectAll("path")
-      .classed("active", centered && function(d) { return d === centered; });
+  var bounds = path.bounds(d),
+      dx = bounds[1][0] - bounds[0][0],
+      dy = bounds[1][1] - bounds[0][1],
+      x = (bounds[0][0] + bounds[1][0]) / 2,
+      y = (bounds[0][1] + bounds[1][1]) / 2,
+      scale = .9 / Math.max(dx / width, dy / height),
+      translate = [width / 2 - scale * x, height / 2 - scale * y];
 
   g.transition()
       .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
+      .style("stroke-width", 1.5 / scale + "px")
+      .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+}
+
+function reset() {
+  active.classed("active", false);
+  active = d3.select(null);
+
+  g.transition()
+      .duration(750)
+      .style("stroke-width", "1.5px")
+      .attr("transform", "");
 }
