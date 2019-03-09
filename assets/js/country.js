@@ -36,8 +36,6 @@ g.append("path")
 
 function clicked(d) {
   if (active.node() === this) return reset();
-  console.log(d.id)
-  return
   active.classed("active", false);
   active = d3.select(this).classed("active", true);
 
