@@ -1,0 +1,18 @@
+.ReactModal__Overlay  {
+  position: absolute;
+  background-color: blue;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}   
+
+.ReactModal__Content {
+  position: fixed;
+
+  top: 0px;
+  left: 50%;
+  right: 0px;
+  bottom: 0px;
+  background-color: rebeccapurple;
+}
