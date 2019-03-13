@@ -35,17 +35,11 @@ g.append("path")
     .attr("class", "mesh")
     .attr("d", path);
 
-$('#selection-modal').on('hidden.bs.modal', function (e) {
-    reset();
-});
-
 $('#selection-close').click(function (e) {
-    $('#selection-modal-dialog').animate({right: '-50%'});
     reset();
 });
 
 $('#selection-modal').click(function (e) {
-    $('#selection-modal-dialog').animate({right: '-50%'});
     reset();
 });
 
@@ -73,6 +67,7 @@ function clicked(d) {
 }
 
 function reset() {
+    $('#selection-modal-dialog').animate({right: '-50%'});
     $('#selection-modal').css('pointer-events', 'none');
     active.classed("active", false);
     active = d3.select(null);
