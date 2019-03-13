@@ -1,5 +1,8 @@
 var svg = d3.select("#map").select("svg");
 
+var baseWidth = 1920;
+var baseHeight = 1080;
+
 var width = $(window).width(),
     height = $(window).height(),
     active = d3.select(null);
@@ -8,7 +11,7 @@ var width = $(window).width(),
     svg.attr("height", height);
 
 var projection = d3.geo.albersUsa()
-    .scale(1500)
+    .scale(1500 * Math.min((width / baseWidth), (height / baseHeight)))
     .translate([width / 2, height / 2]);
 
 var path = d3.geo.path()
