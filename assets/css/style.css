@@ -19,6 +19,11 @@
   stroke-linejoin: round;
 }
 
+#selection-modal h1{
+  width: 100%;
+  text-align: center;
+}
+
 #selection-modal {
   display:block;
   position: absolute;
