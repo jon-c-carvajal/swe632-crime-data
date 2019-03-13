@@ -46,6 +46,10 @@ $('#selection-modal').click(function (e) {
 function clicked(d) {
     if (active.node() === this) return reset();
     
+    var stateName = stateMap[d.id];
+    console.log(stateName);
+    $('#state-header').text(stateName);
+
     active.classed("active", false);
     active = d3.select(this).classed("active", true);
 

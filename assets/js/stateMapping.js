@@ -1,4 +1,4 @@
-var countryMap = {
+var stateMap = {
     1:"Alabama",
     2:"Alaska",
     4:"Arizona",
