@@ -1,17 +1,18 @@
-var width = 960,
-    height = 500,
+var svg = d3.select("#map").select("svg");
+
+var width = $(window).width(),
+    height = $(window).height(),
     active = d3.select(null);
 
+    svg.attr("width", width)
+    svg.attr("height", height);
+
 var projection = d3.geo.albersUsa()
-    .scale(1000)
+    .scale(1500)
     .translate([width / 2, height / 2]);
 
 var path = d3.geo.path()
     .projection(projection);
-
-var svg = d3.select("#map").append("svg")
-    .attr("width", width)
-    .attr("height", height);
 
 svg.append("rect")
     .attr("class", "background")
@@ -36,12 +37,17 @@ g.append("path")
 
 $('#selection-modal').on('hidden.bs.modal', function (e) {
     reset();
-})
+});
 
 $('#selection-close').click(function (e) {
     $('#selection-modal-dialog').animate({right: '-50%'});
     reset();
-})
+});
+
+$('#selection-modal').click(function (e) {
+    $('#selection-modal-dialog').animate({right: '-50%'});
+    reset();
+});
 
 function clicked(d) {
     if (active.node() === this) return reset();
@@ -54,8 +60,8 @@ function clicked(d) {
         dy = bounds[1][1] - bounds[0][1],
         x = (bounds[0][0] + bounds[1][0]) / 2,
         y = (bounds[0][1] + bounds[1][1]) / 2,
-        scale = .9 / Math.max(dx / width, dy / height),
-        translate = [width / 2 - scale * x, height / 2 - scale * y];
+        scale = .5 / Math.max(dx / width, dy / height),
+        translate = [(width / 2 - scale * x) - width / 4, height / 2 - scale * y];
 
     g.transition()
         .duration(750)
@@ -63,9 +69,11 @@ function clicked(d) {
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
    $('#selection-modal-dialog').animate({right:'0%'});
+   $('#selection-modal').css('pointer-events', 'all');
 }
 
 function reset() {
+    $('#selection-modal').css('pointer-events', 'none');
     active.classed("active", false);
     active = d3.select(null);
 
