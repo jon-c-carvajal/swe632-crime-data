@@ -1,52 +1,202 @@
 var stateMap = {
-    1:"Alabama",
-    2:"Alaska",
-    4:"Arizona",
-    5:"Arkansas",
-    6:"California",
-    8:"Colorado",
-    9:"Connecticut",
-    10:"Delaware",
-    12:"Florida",
-    13:"Georgia",
-    15:"Hawaii",
-    16:"Idaho",
-    17:"Illinois",
-    18:"Indiana",
-    19:"Iowa",
-    20:"Kansas",
-    21:"Kentucky",
-    22:"Louisiana",
-    23:"Maine",
-    24:"Maryland",
-    25:"Massachusetts",
-    26:"Michigan",
-    27:"Minnesota",
-    28:"Mississippi",
-    29:"Missouri",
-    30:"Montana",
-    31:"Nebraska",
-    32:"Nevada",
-    33:"New Hampshire",
-    34:"New Jersey",
-    35:"New Mexico",
-    36:"New York",
-    37:"North Carolina",
-    38:"North Dakota",
-    39:"Ohio",
-    40:"Oklahoma",
-    41:"Oregon",
-    42:"Pennsylvania",
-    44:"Rhode Island",
-    45:"South Carolina",
-    46:"South Dakota",
-    47:"Tennessee",
-    48:"Texas",
-    49:"Utah",
-    50:"Vermont",
-    51:"Virginia",
-    53:"Washington",
-    54:"West Virginia",
-    55:"Wisconsin",
-    56:"Wyoming"
+	"1": {
+		"name": "Alabama",
+		"abbr": "AL"
+	},
+	"2": {
+		"name": "Alaska",
+		"abbr": "AK"
+	},
+	"4": {
+		"name": "Arizona",
+		"abbr": "AZ"
+	},
+	"5": {
+		"name": "Arkansas",
+		"abbr": "AR"
+	},
+	"6": {
+		"name": "California",
+		"abbr": "CA"
+	},
+	"8": {
+		"name": "Colorado",
+		"abbr": "CO"
+	},
+	"9": {
+		"name": "Connecticut",
+		"abbr": "CT"
+	},
+	"10": {
+		"name": "Delaware",
+		"abbr": "DE"
+	},
+	"12": {
+		"name": "Florida",
+		"abbr": "FL"
+	},
+	"13": {
+		"name": "Georgia",
+		"abbr": "GA"
+	},
+	"15": {
+		"name": "Hawaii",
+		"abbr": "HI"
+	},
+	"16": {
+		"name": "Idaho",
+		"abbr": "ID"
+	},
+	"17": {
+		"name": "Illinois",
+		"abbr": "IL"
+	},
+	"18": {
+		"name": "Indiana",
+		"abbr": "IN"
+	},
+	"19": {
+		"name": "Iowa",
+		"abbr": "IA"
+	},
+	"20": {
+		"name": "Kansas",
+		"abbr": "KS"
+	},
+	"21": {
+		"name": "Kentucky",
+		"abbr": "KY"
+	},
+	"22": {
+		"name": "Louisiana",
+		"abbr": "LA"
+	},
+	"23": {
+		"name": "Maine",
+		"abbr": "ME"
+	},
+	"24": {
+		"name": "Maryland",
+		"abbr": "MD"
+	},
+	"25": {
+		"name": "Massachusetts",
+		"abbr": "MA"
+	},
+	"26": {
+		"name": "Michigan",
+		"abbr": "MI"
+	},
+	"27": {
+		"name": "Minnesota",
+		"abbr": "MN"
+	},
+	"28": {
+		"name": "Mississippi",
+		"abbr": "MS"
+	},
+	"29": {
+		"name": "Missouri",
+		"abbr": "MO"
+	},
+	"30": {
+		"name": "Montana",
+		"abbr": "MT"
+	},
+	"31": {
+		"name": "Nebraska",
+		"abbr": "NE"
+	},
+	"32": {
+		"name": "Nevada",
+		"abbr": "NV"
+	},
+	"33": {
+		"name": "New Hampshire",
+		"abbr": "NH"
+	},
+	"34": {
+		"name": "New Jersey",
+		"abbr": "NJ"
+	},
+	"35": {
+		"name": "New Mexico",
+		"abbr": "NM"
+	},
+	"36": {
+		"name": "New York",
+		"abbr": "NY"
+	},
+	"37": {
+		"name": "North Carolina",
+		"abbr": "NC"
+	},
+	"38": {
+		"name": "North Dakota",
+		"abbr": "ND"
+	},
+	"39": {
+		"name": "Ohio",
+		"abbr": "OH"
+	},
+	"40": {
+		"name": "Oklahoma",
+		"abbr": "OK"
+	},
+	"41": {
+		"name": "Oregon",
+		"abbr": "OR"
+	},
+	"42": {
+		"name": "Pennsylvania",
+		"abbr": "PA"
+	},
+	"44": {
+		"name": "Rhode Island",
+		"abbr": "RI"
+	},
+	"45": {
+		"name": "South Carolina",
+		"abbr": "SC"
+	},
+	"46": {
+		"name": "South Dakota",
+		"abbr": "SD"
+	},
+	"47": {
+		"name": "Tennessee",
+		"abbr": "TN"
+	},
+	"48": {
+		"name": "Texas",
+		"abbr": "TX"
+	},
+	"49": {
+		"name": "Utah",
+		"abbr": "UT"
+	},
+	"50": {
+		"name": "Vermont",
+		"abbr": "VT"
+	},
+	"51": {
+		"name": "Virginia",
+		"abbr": "VA"
+	},
+	"53": {
+		"name": "Washington",
+		"abbr": "WA"
+	},
+	"54": {
+		"name": "West Virginia",
+		"abbr": "WV"
+	},
+	"55": {
+		"name": "Wisconsin",
+		"abbr": "WI"
+	},
+	"56": {
+		"name": "Wyoming",
+		"abbr": "WY"
+	}
 }

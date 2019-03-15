@@ -1,3 +1,5 @@
+var api_key = "yAJchpcn7oDJXIWQQQxNvRAnqwne6Stw3ounmUCW";
+
 var svg = d3.select("#map").select("svg");
 
 var baseWidth = 1920;
@@ -49,9 +51,21 @@ $('#selection-modal').click(function (e) {
 function clicked(d) {
     if (active.node() === this) return reset();
     
-    var stateName = stateMap[d.id];
-    console.log(stateName);
+    var stateName = stateMap[d.id]["name"];
     $('#state-header').text(stateName);
+
+    var estimateUrl = "https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" + stateMap[d.id]["abbr"] + "/1990/2018?api_key=" + api_key;
+
+    $.ajax({url: estimateUrl,
+        type: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            "cache-control": "no-cache",
+        },
+        success: function(result){
+            //do things with data
+      }});
+
 
     active.classed("active", false);
     active = d3.select(this).classed("active", true);
