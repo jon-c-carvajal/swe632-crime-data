@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  /* set the CSS */
+
+  .line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+  }
+</style>
+
+<body>
+
+  <!-- load the d3.js library -->
+  <!-- d3.v4 needed for timeParse, which we might not need-->
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="datacsv.js"></script>
+  <script>
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 20, right: 20, bottom: 30, left: 50 },
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+
+    // parse the date / time
+    // var parseTime = d3.timeParse("%d-%b-%y");
+
+    // set the ranges
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    // append the svg obgect to the body of the page
+    // appends a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    var lineChartSvg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
+
+    var data = dataEstimate.results;
+
+    // sort
+    data.sort(function (x, y) {
+      //return d3.ascending(x.year, y.year);
+      return x["year"] - y["year"];
+    })
+
+    // Scale the range of the data
+    d1max = d3.max(data, function (d) { return d.burglary; });
+    d2max = d3.max(data, function (d) { return d.violent_crime; });
+    if (d1max >= d2max) {
+      max = d1max;
+    } else {
+      max = d2max;
+    }
+
+    y.domain([0, max]);
+
+    // plotData(data1);
+    // plotData(data2);
+    // plotData(data3);
+    plotData_v(data);
+    plotData_b(data);
+    //removePlotLine();
+    //removeAllLines();
+    // Add the X Axis
+    lineChartSvg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+    // Add the Y Axis
+    lineChartSvg.append("g")
+      .call(d3.axisLeft(y));
+
+    // violent_crime
+    function plotData_v(dataToPlot) {
+      var valueline = d3.line()
+        .x(function (d) { return x(d.year); })
+        .y(function (d) { return y(d.violent_crime); });
+
+      // format the data  
+      dataToPlot.forEach(function (d) {
+        d.year = +d.year;
+        d.violent_crime = +d.violent_crime;
+      });
+
+      x.domain(d3.extent(dataToPlot, function (d) { return d.year; }));
+
+      // Add the valueline path.
+      lineChartSvg.append("path")
+        .data([dataToPlot])
+        .attr("class", "line")
+        .attr("d", valueline);
+    }
+
+    // burglary
+    function plotData_b(dataToPlot) {
+      var valueline = d3.line()
+        .x(function (d) { return x(d.year); })
+        .y(function (d) { return y(d.burglary); });
+
+      // format the data  
+      dataToPlot.forEach(function (d) {
+        d.year = +d.year;
+        d.burglary = +d.burglary;
+      });
+
+      x.domain(d3.extent(dataToPlot, function (d) { return d.year; }));
+
+      // Add the valueline path.
+      lineChartSvg.append("path")
+        .data([dataToPlot])
+        .attr("class", "line")
+        .attr("d", valueline);
+    }
+
+    //removes lines in order that the were added (FIFO)
+    function removePlotLine() {
+      lineChartSvg.select("path").remove();
+    }
+
+    //removes all lines, not currently called
+    function removeAllLines() {
+      lineChartSvg.selectAll("path").remove();
+    }
+  </script>
+</body>
