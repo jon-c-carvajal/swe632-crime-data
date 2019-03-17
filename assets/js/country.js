@@ -1,6 +1,6 @@
 var api_key = "yAJchpcn7oDJXIWQQQxNvRAnqwne6Stw3ounmUCW";
 
-var svg = d3.select("#map").select("svg");
+var mapSvg = d3.select("#map").select("svg");
 
 var baseWidth = 1920;
 var baseHeight = 1080;
@@ -9,8 +9,8 @@ var width = $(window).width(),
     height = $(window).height(),
     active = d3.select(null);
 
-    svg.attr("width", width)
-    svg.attr("height", height);
+mapSvg.attr("width", width);
+mapSvg.attr("height", height);
 
 var projection = d3.geo.albersUsa()
     .scale(1500 * Math.min((width / baseWidth), (height / baseHeight)))
@@ -19,13 +19,13 @@ var projection = d3.geo.albersUsa()
 var path = d3.geo.path()
     .projection(projection);
 
-svg.append("rect")
+mapSvg.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
     .on("click", reset);
 
-var g = svg.append("g")
+var g = mapSvg.append("g")
     .style("stroke-width", "1.5px");
 
 g.selectAll("path")
@@ -52,7 +52,45 @@ function clicked(d) {
     if (active.node() === this) return reset();
     
     var stateName = stateMap[d.id]["name"];
+	var stateAbbr = stateMap[d.id]["abbr"];
     $('#state-header').text(stateName);
+	var chartSvg = d3.select("#state-content").select("svg");
+	
+	//-------- JLM add a "chart" to modal --------------
+	//TODO - why is the svg element stuck at the size it is? 
+	//			in inspect element, it has it as 300x150, regardless of what I set it to below. any ideas?
+	chartSvg.append("svg")
+		.attr("width", 300)
+		.attr("height", 300);
+	
+	var jsonCircles = [
+		{ "x_axis": 50, "y_axis": 50, "radius": 20, "color" : "green" },
+		{ "x_axis": 75, "y_axis": 75, "radius": 20, "color" : "purple"},
+		{ "x_axis": 100, "y_axis": 100, "radius": 20, "color" : "red"},
+		{ "x_axis": 125, "y_axis": 125, "radius": 20, "color" : "black"},
+		{ "x_axis": 150, "y_axis": 150, "radius": 20, "color" : "blue"},
+		{ "x_axis": 150, "y_axis": 50, "radius": 20, "color" : "green" },
+		{ "x_axis": 175, "y_axis": 75, "radius": 20, "color" : "purple"},
+		{ "x_axis": 200, "y_axis": 100, "radius": 20, "color" : "red"},
+		{ "x_axis": 225, "y_axis": 125, "radius": 20, "color" : "black"},
+		{ "x_axis": 250, "y_axis": 150, "radius": 20, "color" : "blue"},
+		{ "x_axis": 250, "y_axis": 50, "radius": 20, "color" : "green" },
+		{ "x_axis": 275, "y_axis": 75, "radius": 20, "color" : "purple"},
+		{ "x_axis": 300, "y_axis": 100, "radius": 20, "color" : "red"},
+		{ "x_axis": 325, "y_axis": 125, "radius": 20, "color" : "black"},
+		{ "x_axis": 350, "y_axis": 150, "radius": 20, "color" : "blue"}];
+
+	var circles = chartSvg.selectAll("circle")
+                          .data(jsonCircles)
+                          .enter()
+                          .append("circle");
+
+	var circleAttributes = circles
+                       .attr("cx", function (d) { return d.x_axis; })
+                       .attr("cy", function (d) { return d.y_axis; })
+                       .attr("r", function (d) { return d.radius; })
+                       .style("fill", function(d) { return d.color; });
+	//-------- End JLM add a "chart" to modal --------------
 
     var estimateUrl = "https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" + stateMap[d.id]["abbr"] + "/1990/2018?api_key=" + api_key;
 
