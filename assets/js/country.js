@@ -92,7 +92,7 @@ function clicked(d) {
                        .style("fill", function(d) { return d.color; });
 	//-------- End JLM add a "chart" to modal --------------
 
-    var estimateUrl = "https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" + stateMap[d.id]["abbr"] + "/1990/2018?api_key=" + api_key;
+    var estimateUrl = "http://127.0.0.1:7777/https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" + stateMap[d.id]["abbr"] + "/1990/2018?api_key=" + api_key;
 
     $.ajax({url: estimateUrl,
         type: 'GET',
@@ -101,7 +101,7 @@ function clicked(d) {
             "cache-control": "no-cache",
         },
         success: function(result){
-            //do things with data
+            console.log(result)
       }});
 
 
