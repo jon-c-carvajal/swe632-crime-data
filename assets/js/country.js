@@ -28,6 +28,8 @@ var api_key = "yAJchpcn7oDJXIWQQQxNvRAnqwne6Stw3ounmUCW";
 
 var mapSvg = d3.select("#map").select("svg");
 
+var estimates;
+
 var baseWidth = 1920;
 var baseHeight = 1080;
 
@@ -118,6 +120,12 @@ function reset() {
 function singleSelectState(html, d){
     if (active.node() === html) return reset();
 
+		// var chartSvg1 = d3.select("#state-content1").select("svg");
+		// var chartSvg2 = d3.select("#state-content2").select("svg");
+		
+		// chartSvg1.attr("width", 500).attr("height", 500);
+		// chartSvg2.attr("width", 500).attr("height", 800);
+	
         var stateName = stateMap[d.id]["name"];
         var stateAbbr = stateMap[d.id]["abbr"];
         $('#state-header').text(stateName);
@@ -131,9 +139,7 @@ function singleSelectState(html, d){
                 "cache-control": "no-cache",
             },
             success: function (result) {
-                console.log(result)
-                
-
+                crimeEstimatesPlot(result, stateMap[d.id]);
             }
         });
 
@@ -155,6 +161,92 @@ function singleSelectState(html, d){
             .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
             showModal();
+}
+
+function crimeEstimatesPlot(result, stateMapInfo) {
+	
+	//TODO do we want to move the clear to somewhere else?
+	//This clears the chart before drawing a new line
+	d3.select("#state-content1").selectAll("svg > *").remove();
+		
+	estimates = reorderData(result);
+		
+	//putting in line chart
+	var margin = {top: 20, right: 20, bottom: 30, left: 70},
+    width = 850 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+	
+	
+	
+	//not in d3.v3
+	//var parseTime = d3.timeParse("%d-%b-%y");
+	var x = d3.scale.linear().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
+	
+	var lineChartSvg = d3.select("#state-content1").select("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+	.append("g").attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+	
+	//create title
+	lineChartSvg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 + (margin.top))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "28px") 
+        //.style("text-decoration", "underline")  
+        .text("Violent Crime Estimates of " + stateMapInfo["name"]);
+	
+	dmax = d3.max(estimates, function(d) { return d.violent_crime; });
+	console.log(dmax);
+	y.domain([0, dmax*1.3]);
+	
+	var valueline = d3.svg.line()
+    .x(function(d) { return x(d.year); })
+    .y(function(d) { return y(d.violent_crime); });
+	
+	x.domain(d3.extent(estimates, function(d) { return d.year; }));
+	
+	lineChartSvg.append("path")
+      .data([estimates])
+      .attr("class", "line")
+      .attr("d", valueline)
+	  .attr("fill","none")
+	  .attr("stroke","red")
+	  .attr("stroke-width","3px");
+	
+	// Add the Axes
+	var yAxis = d3.svg.axis()
+						.orient("left")
+						.scale(y);
+						
+	var xAxis = d3.svg.axis()
+						.orient("bottom")
+						.scale(x);
+	
+	lineChartSvg.append("g")
+			.attr("class","axis x")
+			.attr("transform","translate(0,"+height+")")
+			.call(xAxis);
+			
+	lineChartSvg.append("g")
+			.attr("class","axis y")
+			.call(yAxis);
+}
+
+function reorderData(outOfOrder) {
+	var inOrder = [];
+	
+	var minYear = d3.min(outOfOrder.results, function(d) { return d.year; });
+	console.log(minYear);
+	for(var i = 0; i < outOfOrder.results.length; i++) {
+		var index = outOfOrder.results.findIndex(function(element) {
+			return element.year == minYear + i;
+		});
+		inOrder[i] = outOfOrder.results[index];
+	}
+	return inOrder;
 }
 
 function multiSelectState(){
