@@ -19,6 +19,10 @@
   stroke-linejoin: round;
 }
 
+.modal-content {
+	overflow-y: scroll;
+}
+
 #selection-modal h1{
   width: 100%;
   text-align: center;
