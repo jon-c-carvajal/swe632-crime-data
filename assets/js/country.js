@@ -14,11 +14,22 @@ $(document).keyup(function () {
         console.log("Single Element Selected");
         var node = selectedNodes[Object.keys(selectedNodes)[0]];
         singleSelectState(node["html"], node["state"]);
+		
+		//Can someone explain why we set selectedNodes to {} here? -- Jordan
         selectedNodes = {};
     } else if(Object.keys(selectedNodes).length > 1) {
-        console.log("Multi Select deactivated, comparing elements");
+        console.log("Multi Select deactivated, comparing selected elements");
         //CALL COMPARISON FUNCTION HERE
-        multiSelectState();
+		
+		console.log(Object.keys(selectedNodes));
+		numNodes = Object.keys(selectedNodes).length;
+		var nodes = [];
+		for (var i = 0; i < numNodes; i++) {
+			nodes[i] = selectedNodes[Object.keys(selectedNodes)[i]];
+		}
+		console.log(nodes)
+		console.log("in keyup")
+        multiSelectState(nodes, numNodes);
 
     }
     //Else do nothing
@@ -199,7 +210,6 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .text("Violent Crime Estimates of " + stateMapInfo["name"]);
 	
 	dmax = d3.max(estimates, function(d) { return d.violent_crime; });
-	console.log(dmax);
 	y.domain([0, dmax*1.3]);
 	
 	var valueline = d3.svg.line()
@@ -237,7 +247,6 @@ function crimeEstimatesPlot(result, stateMapInfo) {
 
 function reorderData(outOfOrder) {
 	var inOrder = [];
-	
 	var minYear = d3.min(outOfOrder.results, function(d) { return d.year; });
 	console.log(minYear);
 	for(var i = 0; i < outOfOrder.results.length; i++) {
@@ -249,8 +258,144 @@ function reorderData(outOfOrder) {
 	return inOrder;
 }
 
-function multiSelectState(){
+function multiSelectState(nodes, numNodes){
     //Populate modal with svg
-    $('#state-header').text("State Comparison");
+    
+	console.log("in multiSelectState")
     showModal();
+	
+	var d = [];
+	var stateAbbrs = [];
+	var title = "Comparison of ";
+	for (var i = 0; i < numNodes; i++) {
+		d[i] = nodes[i]["state"];
+		title = title + stateMap[d[i].id]["name"];
+		stateAbbrs[i] = stateMap[d[i].id]["abbr"]; //used for making html
+		if (i < numNodes - 1 ) {
+			title = title + " and "
+		}
+	}
+	$('#state-header').text(title);
+	
+	
+	//Done with setup, get data
+	var results = [];
+	var read = 0;
+	multiSelectDataRetriever(d, numNodes, results, read);
+	
+}
+
+//this is a really dumb function, but the only way I could get it to read all the
+//data was to call this function sequentially from the success of one to the next
+function multiSelectDataRetriever(d, numNodes, results, read){
+	var estimateUrl = "http://127.0.0.1:7777/https://api.usa.gov/crime/fbi/sapi/api/estimates/states/"
+			+ stateMap[d[read].id]["abbr"] + "/1990/2018?api_key=" + api_key;
+		//console.log(estimateUrl);
+	$.ajax({
+		url: estimateUrl,
+		type: 'GET',
+		headers: {
+			"Content-Type": "application/json",
+			"cache-control": "no-cache",
+		},
+		success: function (result) {
+			console.log(result);
+			results[read] = result;
+			read = read + 1;
+			if (read < numNodes) {
+				multiSelectDataRetriever(d, numNodes, results, read);
+			} else {
+				multiSelectChart(d, numNodes, results, read);
+			}
+		}
+	});
+}
+
+function multiSelectChart(nodes, numNodes, results, read) {
+	//need to get both sets of data in correct order
+	for (var i = 0; i < numNodes; i++) {
+		results[i] = reorderData(results[i]);
+	}
+	//console.log(results);
+	
+	console.log(results[0]);
+	
+	d3.select("#state-content1").selectAll("svg > *").remove();
+	
+	//putting in line chart
+	var margin = {top: 20, right: 20, bottom: 30, left: 70},
+    width = 850 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+	
+	var x = d3.scale.linear().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
+	
+	var lineChartSvg = d3.select("#state-content1").select("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+	.append("g").attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+	
+	//create title
+	var title = "Violent Crime Estimates of "
+	for (var i = 0; i < numNodes; i++) {
+		title = title + stateMap[nodes[i].id]["name"];
+		if (i < numNodes - 1 ) {
+			title = title + " and "
+		}
+	} 
+	lineChartSvg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 + (margin.top))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "28px") 
+        //.style("text-decoration", "underline")  
+        .text(title);
+		
+	dmax = 0;
+	for (var i = 0; i < numNodes; i++) {
+		loopmax = d3.max(results[i], function(d) { return d.violent_crime; });
+		if (loopmax > dmax) {
+			dmax = loopmax;
+		}
+	}
+	y.domain([0, dmax*1.3]);
+	
+	var valueline = [];
+	for (var i = 0; i < numNodes; i++) {
+		valueline[i] = d3.svg.line()
+			.x(function(d) { return x(d.year); })
+			.y(function(d) { return y(d.violent_crime); });
+	}
+	
+	//works because all our data should have the same years
+	x.domain(d3.extent(results[0], function(d) { return d.year; }));
+	
+	for (var i = 0; i < numNodes; i++) {
+		lineChartSvg.append("path")
+		  .data([results[i]])
+		  .attr("class", "line")
+		  .attr("d", valueline[i])
+		  .attr("fill","none")
+		  .attr("stroke","red")
+		  .attr("stroke-width","3px");
+	}
+	
+	//axes
+	var yAxis = d3.svg.axis()
+						.orient("left")
+						.scale(y);
+						
+	var xAxis = d3.svg.axis()
+						.orient("bottom")
+						.scale(x);
+	
+	lineChartSvg.append("g")
+			.attr("class","axis x")
+			.attr("transform","translate(0,"+height+")")
+			.call(xAxis);
+			
+	lineChartSvg.append("g")
+			.attr("class","axis y")
+			.call(yAxis);
 }
