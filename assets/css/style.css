@@ -61,11 +61,14 @@
 }
 
 div.tooltip {	
+  vertical-align: middle;
+  line-height: 28px;
+  display: table;
   position: absolute;			
   text-align: center;			
-  width: 60px;					
+  width: auto;					
   height: 28px;					
-  padding: 2px;				
+  padding: 10px;				
   font: 12px sans-serif;		
   background: lightsteelblue;	
   border: 0px;		
