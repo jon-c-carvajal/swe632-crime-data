@@ -61,7 +61,9 @@ g.selectAll("path")
     .enter().append("path")
     .attr("d", path)
     .attr("class", "feature")
-    .on("click", clicked);
+    .on("click", clicked)
+    .on("mouseover", hoveredIn)
+    .on("mouseout", hoveredOut);
 
 g.append("path")
     .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
@@ -75,6 +77,26 @@ $('#selection-close').click(function (e) {
 $('#selection-modal').click(function (e) {
     reset();
 });
+
+// Define the div for the tooltip
+var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
+
+function hoveredIn(d) {
+    div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            div	.html(stateMap[d.id]["name"])	
+                .style("top", ($(this).offset().top) + "px")		
+                .style("left", ($(this).offset().left + 28) + "px");	
+}
+
+function hoveredOut(d) {
+    div.transition()		
+    .duration(500)		
+    .style("opacity", 0);	
+}
 
 function clicked(d) {
     if (multiMode) {
