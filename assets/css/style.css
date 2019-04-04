@@ -1,77 +1,82 @@
 .background {
-  fill: none;
-  pointer-events: all;
+    fill: none;
+    pointer-events: all;
 }
 
 .feature {
-  fill: #ccc;
-  cursor: pointer;
+    fill: #ccc;
+    cursor: pointer;
 }
 
 .feature:hover {
-  fill: wheat;
+    fill: wheat;
 }
 
 .feature.active {
-  fill: orange;
+    fill: orange;
 }
 
 .mesh {
-  fill: none;
-  stroke: #fff;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+    fill: none;
+    stroke: #fff;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .modal-content {
-	overflow-y: scroll;
+    overflow-y: scroll;
 }
 
-#selection-modal h1{
-  width: 100%;
-  text-align: center;
+#selection-modal h1 {
+    width: 100%;
+    text-align: center;
 }
 
 #selection-modal {
-  display:block;
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-  pointer-events: none;
+    display: block;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    pointer-events: none;
 }
 
 #selection-modal-dialog {
-  max-width: none;
-  position: absolute;
-  margin: auto;
-  pointer-events: all;
-  width: 50%;
-  right: -50%;
-  height: 100%;
-  -webkit-transform: translate3d(0%, 0, 0);
-      -ms-transform: translate3d(0%, 0, 0);
-       -o-transform: translate3d(0%, 0, 0);
-          transform: translate3d(0%, 0, 0);
+    max-width: none;
+    position: absolute;
+    margin: auto;
+    pointer-events: all;
+    width: 50%;
+    right: -50%;
+    height: 100%;
+    -webkit-transform: translate3d(0%, 0, 0);
+    -ms-transform: translate3d(0%, 0, 0);
+    -o-transform: translate3d(0%, 0, 0);
+    transform: translate3d(0%, 0, 0);
 }
 
 #selection-modal-dialog .modal-content {
-  height: 100%;
+    height: 100%;
 }
 
-div.tooltip {	
-  vertical-align: middle;
-  line-height: 28px;
-  display: table;
-  position: absolute;			
-  text-align: center;			
-  width: auto;					
-  height: 28px;					
-  padding: 10px;				
-  font: 12px sans-serif;		
-  background: lightsteelblue;	
-  border: 0px;		
-  border-radius: 8px;			
-  pointer-events: none;			
+div.tooltip {
+    vertical-align: middle;
+    line-height: 28px;
+    display: table;
+    position: absolute;
+    text-align: center;
+    width: auto;
+    height: 28px;
+    padding: 10px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+#state-content1 {
+    height: 100%;
+    width: 100%;
 }

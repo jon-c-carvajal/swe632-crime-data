@@ -1,34 +1,34 @@
 var multiMode = false;
 var selectedNodes = {};
 
-$(document).keydown(function (event) {
-    if (!multiMode && event.which == "17"){
+$(document).keydown(function(event) {
+    if (!multiMode && event.which == "17") {
         multiMode = true;
     }
 });
 
-$(document).keyup(function () {
+$(document).keyup(function() {
     multiMode = false;
-    console.log(selectedNodes);//Do things
-    if(Object.keys(selectedNodes).length == 1){
+    console.log(selectedNodes); //Do things
+    if (Object.keys(selectedNodes).length == 1) {
         console.log("Single Element Selected");
         var node = selectedNodes[Object.keys(selectedNodes)[0]];
         singleSelectState(node["html"], node["state"]);
-		
-		//Can someone explain why we set selectedNodes to {} here? -- Jordan
+
+        //Can someone explain why we set selectedNodes to {} here? -- Jordan
         selectedNodes = {};
-    } else if(Object.keys(selectedNodes).length > 1) {
+    } else if (Object.keys(selectedNodes).length > 1) {
         console.log("Multi Select deactivated, comparing selected elements");
         //CALL COMPARISON FUNCTION HERE
-		
-		console.log(Object.keys(selectedNodes));
-		numNodes = Object.keys(selectedNodes).length;
-		var nodes = [];
-		for (var i = 0; i < numNodes; i++) {
-			nodes[i] = selectedNodes[Object.keys(selectedNodes)[i]];
-		}
-		console.log(nodes)
-		console.log("in keyup")
+
+        console.log(Object.keys(selectedNodes));
+        numNodes = Object.keys(selectedNodes).length;
+        var nodes = [];
+        for (var i = 0; i < numNodes; i++) {
+            nodes[i] = selectedNodes[Object.keys(selectedNodes)[i]];
+        }
+        console.log(nodes)
+        console.log("in keyup")
         multiSelectState(nodes, numNodes);
 
     }
@@ -77,45 +77,45 @@ g.selectAll("path")
     .on("mouseout", hoveredOut);
 
 g.append("path")
-    .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
+    .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
     .attr("class", "mesh")
     .attr("d", path);
 
-$('#selection-close').click(function (e) {
+$('#selection-close').click(function(e) {
     reset();
 });
 
-$('#selection-modal').click(function (e) {
+$('#selection-modal').click(function(e) {
     reset();
 });
 
 // Define the div for the tooltip
-var div = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
 function hoveredIn(d) {
-    div.transition()		
-                .duration(200)		
-                .style("opacity", .9);		
-            div	.html(stateMap[d.id]["name"])	
-                .style("top", ($(this).offset().top) + "px")		
-                .style("left", ($(this).offset().left + 28) + "px");	
+    div.transition()
+        .duration(200)
+        .style("opacity", .9);
+    div.html(stateMap[d.id]["name"])
+        .style("top", ($(this).offset().top) + "px")
+        .style("left", ($(this).offset().left + 28) + "px");
 }
 
 function hoveredOut(d) {
-    div.transition()		
-    .duration(500)		
-    .style("opacity", 0);	
+    div.transition()
+        .duration(500)
+        .style("opacity", 0);
 }
 
 function clicked(d) {
     if (multiMode) {
-        if(selectedNodes[d.id]){
+        if (selectedNodes[d.id]) {
             delete selectedNodes[d.id];
             d3.select(this).classed("active", false);
-        }else{
-            selectedNodes[d.id] = {"html":this, "state":d};
+        } else {
+            selectedNodes[d.id] = { "html": this, "state": d };
             d3.select(this).classed("active", true);
         }
     } else {
@@ -123,12 +123,12 @@ function clicked(d) {
     }
 }
 
-function showModal(){
+function showModal() {
     $('#selection-modal-dialog').animate({ right: '0%' });
     $('#selection-modal').css('pointer-events', 'all');
 }
 
-function hideModal(){
+function hideModal() {
     $('#selection-modal-dialog').animate({ right: '-50%' });
     $('#selection-modal').css('pointer-events', 'none');
 }
@@ -139,7 +139,7 @@ function reset() {
     active.classed("active", false);
     active = d3.select(null);
 
-    for(var key in selectedNodes){
+    for (var key in selectedNodes) {
         d3.select(selectedNodes[key]["html"]).classed("active", false);
     }
     selectedNodes = {};
@@ -150,274 +150,294 @@ function reset() {
         .attr("transform", "");
 }
 
-function singleSelectState(html, d){
+function singleSelectState(html, d) {
     if (active.node() === html) return reset();
 
-		// var chartSvg1 = d3.select("#state-content1").select("svg");
-		// var chartSvg2 = d3.select("#state-content2").select("svg");
-		
-		// chartSvg1.attr("width", 500).attr("height", 500);
-		// chartSvg2.attr("width", 500).attr("height", 800);
-	
-        var stateName = stateMap[d.id]["name"];
-        var stateAbbr = stateMap[d.id]["abbr"];
-        $('#state-header').text(stateName);
-        var estimateUrl = "http://127.0.0.1:7777/https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" + stateMap[d.id]["abbr"] + "/1990/2018?api_key=" + api_key;
+    // var chartSvg1 = d3.select("#state-content1").select("svg");
+    // var chartSvg2 = d3.select("#state-content2").select("svg");
 
-        $.ajax({
-            url: estimateUrl,
-            type: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-                "cache-control": "no-cache",
-            },
-            success: function (result) {
-                crimeEstimatesPlot(result, stateMap[d.id]);
-            }
-        });
+    // chartSvg1.attr("width", 500).attr("height", 500);
+    // chartSvg2.attr("width", 500).attr("height", 800);
+
+    var stateName = stateMap[d.id]["name"];
+    var stateAbbr = stateMap[d.id]["abbr"];
+    $('#state-header').text(stateName);
+    var estimateUrl = "http://127.0.0.1:7777/https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" + stateMap[d.id]["abbr"] + "/1990/2018?api_key=" + api_key;
+
+    $.ajax({
+        url: estimateUrl,
+        type: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            "cache-control": "no-cache",
+        },
+        success: function(result) {
+            crimeEstimatesPlot(result, stateMap[d.id]);
+        }
+    });
 
 
-        active.classed("active", false);
-        active = d3.select(html).classed("active", true);
+    active.classed("active", false);
+    active = d3.select(html).classed("active", true);
 
-        var bounds = path.bounds(d),
-            dx = bounds[1][0] - bounds[0][0],
-            dy = bounds[1][1] - bounds[0][1],
-            x = (bounds[0][0] + bounds[1][0]) / 2,
-            y = (bounds[0][1] + bounds[1][1]) / 2,
-            scale = .5 / Math.max(dx / width, dy / height),
-            translate = [(width / 2 - scale * x) - width / 4, height / 2 - scale * y];
+    var bounds = path.bounds(d),
+        dx = bounds[1][0] - bounds[0][0],
+        dy = bounds[1][1] - bounds[0][1],
+        x = (bounds[0][0] + bounds[1][0]) / 2,
+        y = (bounds[0][1] + bounds[1][1]) / 2,
+        scale = .5 / Math.max(dx / width, dy / height),
+        translate = [(width / 2 - scale * x) - width / 4, height / 2 - scale * y];
 
-        g.transition()
-            .duration(750)
-            .style("stroke-width", 1.5 / scale + "px")
-            .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+    g.transition()
+        .duration(750)
+        .style("stroke-width", 1.5 / scale + "px")
+        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-            showModal();
+    showModal();
 }
 
 function crimeEstimatesPlot(result, stateMapInfo) {
-	
-	//TODO do we want to move the clear to somewhere else?
-	//This clears the chart before drawing a new line
-	d3.select("#state-content1").selectAll("svg > *").remove();
-		
-	estimates = reorderData(result);
-		
-	//putting in line chart
-	var margin = {top: 20, right: 20, bottom: 30, left: 70},
-    width = 850 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-	
-	
-	
-	//not in d3.v3
-	//var parseTime = d3.timeParse("%d-%b-%y");
-	var x = d3.scale.linear().range([0, width]);
-	var y = d3.scale.linear().range([height, 0]);
-	
-	var lineChartSvg = d3.select("#state-content1").select("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-	.append("g").attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-	
-	//create title
-	lineChartSvg.append("text")
-        .attr("x", (width / 2))             
+
+    //TODO do we want to move the clear to somewhere else?
+    //This clears the chart before drawing a new line
+    d3.select("#state-content1").selectAll("svg > *").remove();
+
+    estimates = reorderData(result);
+
+    //putting in line chart
+    var margin = { top: 20, right: 20, bottom: 30, left: 70 },
+        width = 850 - margin.left - margin.right,
+        height = 550 - margin.top - margin.bottom;
+
+
+
+    //not in d3.v3
+    //var parseTime = d3.timeParse("%d-%b-%y");
+    var x = d3.scale.linear().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+
+    var lineChartSvg = d3.select("#state-content1").select("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .append("g").attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    //create title
+    lineChartSvg.append("text")
+        .attr("x", (width / 2))
         .attr("y", 0 + (margin.top))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "28px") 
+        .attr("text-anchor", "middle")
+        .style("font-size", "28px")
         //.style("text-decoration", "underline")  
         .text("Violent Crime Estimates of " + stateMapInfo["name"]);
-	
-	dmax = d3.max(estimates, function(d) { return d.violent_crime; });
-	y.domain([0, dmax*1.3]);
-	
-	var valueline = d3.svg.line()
-    .x(function(d) { return x(d.year); })
-    .y(function(d) { return y(d.violent_crime); });
-	
-	x.domain(d3.extent(estimates, function(d) { return d.year; }));
-	
-	lineChartSvg.append("path")
-      .data([estimates])
-      .attr("class", "line")
-      .attr("d", valueline)
-	  .attr("fill","none")
-	  .attr("stroke","red")
-	  .attr("stroke-width","3px");
-	
-	// Add the Axes
-	var yAxis = d3.svg.axis()
-						.orient("left")
-						.scale(y);
-						
-	var xAxis = d3.svg.axis()
-						.orient("bottom")
-						.scale(x);
-	
-	lineChartSvg.append("g")
-			.attr("class","axis x")
-			.attr("transform","translate(0,"+height+")")
-			.call(xAxis);
-			
-	lineChartSvg.append("g")
-			.attr("class","axis y")
-			.call(yAxis);
+
+    dmax = d3.max(estimates, function(d) { return d.violent_crime; });
+    y.domain([0, dmax * 1.3]);
+
+    var valueline = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.violent_crime); });
+
+    x.domain(d3.extent(estimates, function(d) { return d.year; }));
+
+    lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", valueline)
+        .attr("fill", "none")
+        .attr("stroke", "red")
+        .attr("stroke-width", "3px");
+
+    // Add the Axes
+    var yAxis = d3.svg.axis()
+        .orient("left")
+        .scale(y);
+
+    var xAxis = d3.svg.axis()
+        .orient("bottom")
+        .tickFormat(function(date) {
+            return d3.time.format('%Y')(new Date(date, 1, 1, 1, 1, 1, 1));
+        })
+        .scale(x);
+
+    lineChartSvg.append("g")
+        .attr("class", "axis x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    lineChartSvg.append("g")
+        .attr("class", "axis y")
+        .call(yAxis);
+
+    // text label for the x axis
+    lineChartSvg.append("text")
+        .attr("transform",
+            "translate(" + (width / 2) + " ," +
+            (height + margin.top + 20) + ")")
+        .style("text-anchor", "middle")
+        .text("Date");
+
+    // text label for the y axis
+    lineChartSvg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Count");
 }
 
 function reorderData(outOfOrder) {
-	var inOrder = [];
-	var minYear = d3.min(outOfOrder.results, function(d) { return d.year; });
-	console.log(minYear);
-	for(var i = 0; i < outOfOrder.results.length; i++) {
-		var index = outOfOrder.results.findIndex(function(element) {
-			return element.year == minYear + i;
-		});
-		inOrder[i] = outOfOrder.results[index];
-	}
-	return inOrder;
+    var inOrder = [];
+    var minYear = d3.min(outOfOrder.results, function(d) { return d.year; });
+    console.log(minYear);
+    for (var i = 0; i < outOfOrder.results.length; i++) {
+        var index = outOfOrder.results.findIndex(function(element) {
+            return element.year == minYear + i;
+        });
+        inOrder[i] = outOfOrder.results[index];
+    }
+    return inOrder;
 }
 
-function multiSelectState(nodes, numNodes){
+function multiSelectState(nodes, numNodes) {
     //Populate modal with svg
-    
-	console.log("in multiSelectState")
+
+    console.log("in multiSelectState")
     showModal();
-	
-	var d = [];
-	var stateAbbrs = [];
-	var title = "Comparison of ";
-	for (var i = 0; i < numNodes; i++) {
-		d[i] = nodes[i]["state"];
-		title = title + stateMap[d[i].id]["name"];
-		stateAbbrs[i] = stateMap[d[i].id]["abbr"]; //used for making html
-		if (i < numNodes - 1 ) {
-			title = title + " and "
-		}
-	}
-	$('#state-header').text(title);
-	
-	
-	//Done with setup, get data
-	var results = [];
-	var read = 0;
-	multiSelectDataRetriever(d, numNodes, results, read);
-	
+
+    var d = [];
+    var stateAbbrs = [];
+    var title = "Comparison of ";
+    for (var i = 0; i < numNodes; i++) {
+        d[i] = nodes[i]["state"];
+        title = title + stateMap[d[i].id]["name"];
+        stateAbbrs[i] = stateMap[d[i].id]["abbr"]; //used for making html
+        if (i < numNodes - 1) {
+            title = title + " and "
+        }
+    }
+    $('#state-header').text(title);
+
+
+    //Done with setup, get data
+    var results = [];
+    var read = 0;
+    multiSelectDataRetriever(d, numNodes, results, read);
+
 }
 
 //this is a really dumb function, but the only way I could get it to read all the
 //data was to call this function sequentially from the success of one to the next
-function multiSelectDataRetriever(d, numNodes, results, read){
-	var estimateUrl = "http://127.0.0.1:7777/https://api.usa.gov/crime/fbi/sapi/api/estimates/states/"
-			+ stateMap[d[read].id]["abbr"] + "/1990/2018?api_key=" + api_key;
-		//console.log(estimateUrl);
-	$.ajax({
-		url: estimateUrl,
-		type: 'GET',
-		headers: {
-			"Content-Type": "application/json",
-			"cache-control": "no-cache",
-		},
-		success: function (result) {
-			console.log(result);
-			results[read] = result;
-			read = read + 1;
-			if (read < numNodes) {
-				multiSelectDataRetriever(d, numNodes, results, read);
-			} else {
-				multiSelectChart(d, numNodes, results, read);
-			}
-		}
-	});
+function multiSelectDataRetriever(d, numNodes, results, read) {
+    var estimateUrl = "http://127.0.0.1:7777/https://api.usa.gov/crime/fbi/sapi/api/estimates/states/" +
+        stateMap[d[read].id]["abbr"] + "/1990/2018?api_key=" + api_key;
+    //console.log(estimateUrl);
+    $.ajax({
+        url: estimateUrl,
+        type: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            "cache-control": "no-cache",
+        },
+        success: function(result) {
+            console.log(result);
+            results[read] = result;
+            read = read + 1;
+            if (read < numNodes) {
+                multiSelectDataRetriever(d, numNodes, results, read);
+            } else {
+                multiSelectChart(d, numNodes, results, read);
+            }
+        }
+    });
 }
 
 function multiSelectChart(nodes, numNodes, results, read) {
-	//need to get both sets of data in correct order
-	for (var i = 0; i < numNodes; i++) {
-		results[i] = reorderData(results[i]);
-	}
-	//console.log(results);
-	
-	console.log(results[0]);
-	
-	d3.select("#state-content1").selectAll("svg > *").remove();
-	
-	//putting in line chart
-	var margin = {top: 20, right: 20, bottom: 30, left: 70},
-    width = 850 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-	
-	var x = d3.scale.linear().range([0, width]);
-	var y = d3.scale.linear().range([height, 0]);
-	
-	var lineChartSvg = d3.select("#state-content1").select("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-	.append("g").attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-	
-	//create title
-	var title = "Violent Crime Estimates of "
-	for (var i = 0; i < numNodes; i++) {
-		title = title + stateMap[nodes[i].id]["name"];
-		if (i < numNodes - 1 ) {
-			title = title + " and "
-		}
-	} 
-	lineChartSvg.append("text")
-        .attr("x", (width / 2))             
+    //need to get both sets of data in correct order
+    for (var i = 0; i < numNodes; i++) {
+        results[i] = reorderData(results[i]);
+    }
+    //console.log(results);
+
+    console.log(results[0]);
+
+    d3.select("#state-content1").selectAll("svg > *").remove();
+
+    //putting in line chart
+    var margin = { top: 20, right: 20, bottom: 30, left: 70 },
+        width = 850 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var x = d3.scale.linear().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+
+    var lineChartSvg = d3.select("#state-content1").select("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g").attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    //create title
+    var title = "Violent Crime Estimates of "
+    for (var i = 0; i < numNodes; i++) {
+        title = title + stateMap[nodes[i].id]["name"];
+        if (i < numNodes - 1) {
+            title = title + " and "
+        }
+    }
+    lineChartSvg.append("text")
+        .attr("x", (width / 2))
         .attr("y", 0 + (margin.top))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "28px") 
+        .attr("text-anchor", "middle")
+        .style("font-size", "28px")
         //.style("text-decoration", "underline")  
         .text(title);
-		
-	dmax = 0;
-	for (var i = 0; i < numNodes; i++) {
-		loopmax = d3.max(results[i], function(d) { return d.violent_crime; });
-		if (loopmax > dmax) {
-			dmax = loopmax;
-		}
-	}
-	y.domain([0, dmax*1.3]);
-	
-	var valueline = [];
-	for (var i = 0; i < numNodes; i++) {
-		valueline[i] = d3.svg.line()
-			.x(function(d) { return x(d.year); })
-			.y(function(d) { return y(d.violent_crime); });
-	}
-	
-	//works because all our data should have the same years
-	x.domain(d3.extent(results[0], function(d) { return d.year; }));
-	
-	for (var i = 0; i < numNodes; i++) {
-		lineChartSvg.append("path")
-		  .data([results[i]])
-		  .attr("class", "line")
-		  .attr("d", valueline[i])
-		  .attr("fill","none")
-		  .attr("stroke","red")
-		  .attr("stroke-width","3px");
-	}
-	
-	//axes
-	var yAxis = d3.svg.axis()
-						.orient("left")
-						.scale(y);
-						
-	var xAxis = d3.svg.axis()
-						.orient("bottom")
-						.scale(x);
-	
-	lineChartSvg.append("g")
-			.attr("class","axis x")
-			.attr("transform","translate(0,"+height+")")
-			.call(xAxis);
-			
-	lineChartSvg.append("g")
-			.attr("class","axis y")
-			.call(yAxis);
+
+    dmax = 0;
+    for (var i = 0; i < numNodes; i++) {
+        loopmax = d3.max(results[i], function(d) { return d.violent_crime; });
+        if (loopmax > dmax) {
+            dmax = loopmax;
+        }
+    }
+    y.domain([0, dmax * 1.3]);
+
+    var valueline = [];
+    for (var i = 0; i < numNodes; i++) {
+        valueline[i] = d3.svg.line()
+            .x(function(d) { return x(d.year); })
+            .y(function(d) { return y(d.violent_crime); });
+    }
+
+    //works because all our data should have the same years
+    x.domain(d3.extent(results[0], function(d) { return d.year; }));
+
+    for (var i = 0; i < numNodes; i++) {
+        lineChartSvg.append("path")
+            .data([results[i]])
+            .attr("class", "line")
+            .attr("d", valueline[i])
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-width", "3px");
+    }
+
+    //axes
+    var yAxis = d3.svg.axis()
+        .orient("left")
+        .scale(y);
+
+    var xAxis = d3.svg.axis()
+        .orient("bottom")
+        .scale(x);
+
+    lineChartSvg.append("g")
+        .attr("class", "axis x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    lineChartSvg.append("g")
+        .attr("class", "axis y")
+        .call(yAxis);
 }
