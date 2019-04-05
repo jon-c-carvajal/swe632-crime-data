@@ -90,7 +90,7 @@ $('#selection-close').click(function (e) {
     reset();
 });
 
-$('#selection-modal').click(function (e) {
+$('#selection-background').click(function (e) {
     reset();
 });
 
