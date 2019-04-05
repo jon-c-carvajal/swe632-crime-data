@@ -1,13 +1,18 @@
 var multiMode = false;
 var selectedNodes = {};
 
-$(document).keydown(function(event) {
+var plotEntries = [{ "key": "aggravated_assault", "display_name": "Aggravated Assault", "color": "indianred" },
+{ "key": "homicide", "display_name": "Homicide","color": "dodgerblue" },
+{ "key": "rape", "display_name": "Rape","color": "khaki" },
+{ "key": "robbery", "display_name": "Robbery","color": "mediumpurple" },];
+
+$(document).keydown(function (event) {
     if (!multiMode && event.which == "17") {
         multiMode = true;
     }
 });
 
-$(document).keyup(function() {
+$(document).keyup(function () {
     multiMode = false;
     console.log(selectedNodes); //Do things
     if (Object.keys(selectedNodes).length == 1) {
@@ -77,15 +82,15 @@ g.selectAll("path")
     .on("mouseout", hoveredOut);
 
 g.append("path")
-    .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+    .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
     .attr("class", "mesh")
     .attr("d", path);
 
-$('#selection-close').click(function(e) {
+$('#selection-close').click(function (e) {
     reset();
 });
 
-$('#selection-modal').click(function(e) {
+$('#selection-modal').click(function (e) {
     reset();
 });
 
@@ -129,13 +134,15 @@ function showModal() {
 }
 
 function hideModal() {
-    $('#selection-modal-dialog').animate({ right: '-50%' });
+    $('#selection-modal-dialog').animate({ right: '-50%' }, function (){
+        $('#state-header').text("");
+        $("#state-content1 svg").empty();
+    });
     $('#selection-modal').css('pointer-events', 'none');
 }
 
 function reset() {
     hideModal();
-    $('#state-header').text("");
     active.classed("active", false);
     active = d3.select(null);
 
@@ -148,6 +155,7 @@ function reset() {
         .duration(750)
         .style("stroke-width", "1.5px")
         .attr("transform", "");
+
 }
 
 function singleSelectState(html, d) {
@@ -171,8 +179,10 @@ function singleSelectState(html, d) {
             "Content-Type": "application/json",
             "cache-control": "no-cache",
         },
-        success: function(result) {
+        success: function (result) {
+            console.log(result);
             crimeEstimatesPlot(result, stateMap[d.id]);
+            showModal();
         }
     });
 
@@ -192,276 +202,23 @@ function singleSelectState(html, d) {
         .duration(750)
         .style("stroke-width", 1.5 / scale + "px")
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-    showModal();
-}
-
-function crimeEstimatesPlot(result, stateMapInfo) {
-
-    //TODO do we want to move the clear to somewhere else?
-    //This clears the chart before drawing a new line
-    d3.select("#state-content1").selectAll("svg > *").remove();
-
-    estimates = reorderData(result);
-
-    //putting in line chart
-    var margin = { top: 20, right: 20, bottom: 30, left: 85 },
-        width = 850 - margin.left - margin.right,
-        height = 550 - margin.top - margin.bottom;
-
-
-
-    //not in d3.v3
-    //var parseTime = d3.timeParse("%d-%b-%y");
-    var x = d3.scaleLinear().range([0, width]);
-    var y = d3.scaleLinear().range([height, 0]);
-
-    var lineChartSvg = d3.select("#state-content1").select("svg")
-        .attr("width", "100%")
-        .attr("height", "100%")
-        .append("g").attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    //create title
-    lineChartSvg.append("text")
-        .attr("x", (width / 2))
-        .attr("y", 0 + (margin.top))
-        .attr("text-anchor", "middle")
-        .style("font-size", "28px")
-        //.style("text-decoration", "underline")  
-        .text("Violent Crime Estimates of " + stateMapInfo["name"]);
-
-	//I'm sure theres a better way of doing this
-	var hmax = []
-    
-	hmax[0] = d3.max(estimates, function(d) { return d.aggravated_assault; });
-	//hmax[4] = d3.max(estimates, function(d) { return d.arson; });
-	//hmax[1] = d3.max(estimates, function(d) { return d.burglary; });
-	hmax[1] = d3.max(estimates, function(d) { return d.homicide; });
-	//hmax[2] = d3.max(estimates, function(d) { return d.larceny; });
-	//hmax[3] = d3.max(estimates, function(d) { return d.motor_vehicle_theft; });
-	//hmax[5] = d3.max(estimates, function(d) { return d.property_crime; });
-	hmax[2] = d3.max(estimates, function(d) { return d.rape_legacy + d.rape_revised; });
-	hmax[3] = d3.max(estimates, function(d) { return d.robbery; });
-	
-	var dmax = 0;
-	for (var i = 0; i < 4; i++) {
-		if (hmax[i] > dmax) {
-			dmax = hmax[i];
-		}
-	}
-	
-    y.domain([0, 1.3*dmax]);
-	x.domain(d3.extent(estimates, function(d) { return d.year; }));
-	
-	
-	console.log(estimates);
-	//this is for all violent crime
-    // var valueline = d3.svg.line()
-        // .x(function(d) { return x(d.year); })
-        // .y(function(d) { return y(d.violent_crime); });
-	// lineChartSvg.append("path")
-        // .data([estimates])
-        // .attr("class", "line")
-        // .attr("d", valueline)
-        // .attr("fill", "none")
-        // .attr("stroke", "red")
-        // .attr("stroke-width", "3px");
-	
-	var aaLine  = d3.line()
-        .x(function(d) { return x(d.year); })
-		.y(function(d) { return y(d.aggravated_assault); });
-		
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", aaLine)
-        .attr("fill", "none")
-        .attr("stroke", "red")
-        .attr("stroke-width", "3px");
-	
-	populateDots(lineChartSvg, estimates, "year", "aggravated_assault", x, y);
-	/* var arsonLine  = d3.svg.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.arson); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", arsonLine)
-        .attr("fill", "none")
-        .attr("stroke", "purple")
-        .attr("stroke-width", "3px"); */
-	
-	/* var burglaryLine  = d3.svg.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.burglary); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", burglaryLine)
-        .attr("fill", "none")
-        .attr("stroke", "red")
-        .attr("stroke-width", "3px"); */
-	
-	var homicideLine  = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.homicide); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", homicideLine)
-        .attr("fill", "none")
-        .attr("stroke", "blue")
-        .attr("stroke-width", "3px");
-	
-	populateDots(lineChartSvg, estimates, "year", "homicide", x, y);
-	/* var larcenyLine  = d3.svg.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.larceny); });
-	lineChartSvg.append("path")
-	.data([estimates])
-	.attr("class", "line")
-	.attr("d", larcenyLine)
-	.attr("fill", "none")
-	.attr("stroke", "green")
-	.attr("stroke-width", "3px"); */
-		
-	/* var mvtLine  = d3.svg.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.motor_vehicle_theft); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", mvtLine)
-        .attr("fill", "none")
-        .attr("stroke", "black")
-        .attr("stroke-width", "3px"); */
-		
-	/* var propertyCrimeLine  = d3.svg.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.property_crime); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", propertyCrimeLine)
-        .attr("fill", "none")
-        .attr("stroke", "orange")
-        .attr("stroke-width", "3px"); */
-	
-	var rapeLine  = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.rape_legacy + d.rape_revised); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", rapeLine)
-        .attr("fill", "none")
-        .attr("stroke", "yellow")
-        .attr("stroke-width", "3px");
-	//populateDots(lineChartSvg, estimates, "year", "rape_revised", x, y);
-
-	var robberyLine  = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.robbery); });
-	lineChartSvg.append("path")
-        .data([estimates])
-        .attr("class", "line")
-        .attr("d", robberyLine)
-        .attr("fill", "none")
-        .attr("stroke", "cyan")
-        .attr("stroke-width", "3px");
-	
-	populateDots(lineChartSvg, estimates, "year", "robbery", x, y);
-	
-    // Add the Axes
-    var yAxis = d3.axisLeft()
-        .scale(y);
-
-    var xAxis = d3.axisBottom()
-        .tickFormat(function(date) {
-            return d3.timeFormat('%Y')(new Date(date, 1, 1, 1, 1, 1, 1));
-        })
-        .scale(x);
-
-    lineChartSvg.append("g")
-        .attr("class", "axis x")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-    lineChartSvg.append("g")
-        .attr("class", "axis y")
-        .call(yAxis);
-
-    // text label for the x axis
-    lineChartSvg.append("text")
-        .attr("transform",
-            "translate(" + (width / 2) + " ," +
-            (height + margin.top + 20) + ")")
-        .style("text-anchor", "middle")
-        .text("Date");
-
-    // text label for the y axis
-    lineChartSvg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-		.attr("x", 0 - (height / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-		.text("Count");
-
-	}
-
-function populateDots(lineChartSvg, data, x_name, y_name, x, y){
-	// create a subselection for our "dots"
-    // and on enter append a bunch of circles
-    lineChartSvg.selectAll(".dot")
-      .data(data, function(d){
-		  return d;
-		})
-      .enter()
-      .append("circle")
-      .attr("r", 3)
-      .attr("cx", function(d,i){
-        return x(d[[x_name]]);
-      })
-      .attr("cy", function(d){
-        return y(d[[y_name]]);
-      })
-      .attr("fill", function(d){
-        return d3.select(this).datum().category;
-	  }).on("mouseover", function(d) {		
-		div.transition()		
-			.duration(50)		
-			.style("opacity", .9);		
-		div	.html("Year : " + d[[x_name]] + "<br/> Count : " + d[[y_name]])	
-			.style("left", (d3.event.pageX) + "px")		
-			.style("top", (d3.event.pageY - 28) + "px");	
-		})					
-	.on("mouseout", function(d) {		
-		div.transition()		
-			.duration(500)		
-			.style("opacity", 0);	
-	});
 }
 
 function reorderData(outOfOrder) {
-    var inOrder = [];
-    var minYear = d3.min(outOfOrder.results, function(d) { return d.year; });
-    console.log(minYear);
-    for (var i = 0; i < outOfOrder.results.length; i++) {
-        var index = outOfOrder.results.findIndex(function(element) {
-            return element.year == minYear + i;
-        });
-        inOrder[i] = outOfOrder.results[index];
-    }
+    var inOrder = outOfOrder.results.sort(function (a, b){
+        if (a["year"] > b["year"]) return 1;
+        if (b["year"] > a["year"]) return -1;
+        return 0;
+      });
+    inOrder.forEach(function(obj){
+        obj["rape"] = obj["rape_revised"] | obj["rape_legacy"];
+    });
     return inOrder;
 }
 
 function multiSelectState(nodes, numNodes) {
     //Populate modal with svg
-
     console.log("in multiSelectState")
-    showModal();
 
     var d = [];
     var stateAbbrs = [];
@@ -481,7 +238,6 @@ function multiSelectState(nodes, numNodes) {
     var results = [];
     var read = 0;
     multiSelectDataRetriever(d, numNodes, results, read);
-
 }
 
 //this is a really dumb function, but the only way I could get it to read all the
@@ -497,7 +253,7 @@ function multiSelectDataRetriever(d, numNodes, results, read) {
             "Content-Type": "application/json",
             "cache-control": "no-cache",
         },
-        success: function(result) {
+        success: function (result) {
             console.log(result);
             results[read] = result;
             read = read + 1;
@@ -506,6 +262,7 @@ function multiSelectDataRetriever(d, numNodes, results, read) {
             } else {
                 multiSelectChart(d, numNodes, results, read);
             }
+            showModal();
         }
     });
 }
@@ -525,8 +282,6 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	var groupKey = "state_abbr"; //hardcoding is bad
 	var keys = ["aggravated_assault", "homicide", "rape_revised", "robbery"]; //TODO - this only handles rape_revised, not all rapes
 	console.log(groupKey);
-
-    d3.select("#state-content1").selectAll("svg > *").remove();
 
 	//new and improved bar chart
 	var margin = ({top: 10, right: 10, bottom: 20, left: 40});
