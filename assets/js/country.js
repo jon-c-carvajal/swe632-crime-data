@@ -51,11 +51,11 @@ var width = $(window).width(),
 mapSvg.attr("width", width);
 mapSvg.attr("height", height);
 
-var projection = d3.geo.albersUsa()
+var projection = d3.geoAlbersUsa()
     .scale(1500 * Math.min((width / baseWidth), (height / baseHeight)))
     .translate([width / 2, height / 2]);
 
-var path = d3.geo.path()
+var path = d3.geoPath()
     .projection(projection);
 
 mapSvg.append("rect")
@@ -205,7 +205,7 @@ function crimeEstimatesPlot(result, stateMapInfo) {
     estimates = reorderData(result);
 
     //putting in line chart
-    var margin = { top: 20, right: 20, bottom: 30, left: 70 },
+    var margin = { top: 20, right: 20, bottom: 30, left: 85 },
         width = 850 - margin.left - margin.right,
         height = 550 - margin.top - margin.bottom;
 
@@ -213,8 +213,8 @@ function crimeEstimatesPlot(result, stateMapInfo) {
 
     //not in d3.v3
     //var parseTime = d3.timeParse("%d-%b-%y");
-    var x = d3.scale.linear().range([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
 
     var lineChartSvg = d3.select("#state-content1").select("svg")
         .attr("width", "100%")
@@ -268,9 +268,10 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         // .attr("stroke", "red")
         // .attr("stroke-width", "3px");
 	
-	var aaLine  = d3.svg.line()
+	var aaLine  = d3.line()
         .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.aggravated_assault); });
+		.y(function(d) { return y(d.aggravated_assault); });
+		
 	lineChartSvg.append("path")
         .data([estimates])
         .attr("class", "line")
@@ -279,6 +280,7 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("stroke", "red")
         .attr("stroke-width", "3px");
 	
+	populateDots(lineChartSvg, estimates, "year", "aggravated_assault", x, y);
 	/* var arsonLine  = d3.svg.line()
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.arson); });
@@ -301,7 +303,7 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("stroke", "red")
         .attr("stroke-width", "3px"); */
 	
-	var homicideLine  = d3.svg.line()
+	var homicideLine  = d3.line()
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.homicide); });
 	lineChartSvg.append("path")
@@ -312,6 +314,7 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("stroke", "blue")
         .attr("stroke-width", "3px");
 	
+	populateDots(lineChartSvg, estimates, "year", "homicide", x, y);
 	/* var larcenyLine  = d3.svg.line()
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.larceny); });
@@ -345,7 +348,7 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("stroke", "orange")
         .attr("stroke-width", "3px"); */
 	
-	var rapeLine  = d3.svg.line()
+	var rapeLine  = d3.line()
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.rape_legacy + d.rape_revised); });
 	lineChartSvg.append("path")
@@ -355,8 +358,9 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("fill", "none")
         .attr("stroke", "yellow")
         .attr("stroke-width", "3px");
-		
-	var robberyLine  = d3.svg.line()
+	//populateDots(lineChartSvg, estimates, "year", "rape_revised", x, y);
+
+	var robberyLine  = d3.line()
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.robbery); });
 	lineChartSvg.append("path")
@@ -367,16 +371,15 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("stroke", "cyan")
         .attr("stroke-width", "3px");
 	
+	populateDots(lineChartSvg, estimates, "year", "robbery", x, y);
 	
     // Add the Axes
-    var yAxis = d3.svg.axis()
-        .orient("left")
+    var yAxis = d3.axisLeft()
         .scale(y);
 
-    var xAxis = d3.svg.axis()
-        .orient("bottom")
+    var xAxis = d3.axisBottom()
         .tickFormat(function(date) {
-            return d3.time.format('%Y')(new Date(date, 1, 1, 1, 1, 1, 1));
+            return d3.timeFormat('%Y')(new Date(date, 1, 1, 1, 1, 1, 1));
         })
         .scale(x);
 
@@ -401,10 +404,44 @@ function crimeEstimatesPlot(result, stateMapInfo) {
     lineChartSvg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
-        .attr("x", 0 - (height / 2))
+		.attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Count");
+		.text("Count");
+
+	}
+
+function populateDots(lineChartSvg, data, x_name, y_name, x, y){
+	// create a subselection for our "dots"
+    // and on enter append a bunch of circles
+    lineChartSvg.selectAll(".dot")
+      .data(data, function(d){
+		  return d;
+		})
+      .enter()
+      .append("circle")
+      .attr("r", 3)
+      .attr("cx", function(d,i){
+        return x(d[[x_name]]);
+      })
+      .attr("cy", function(d){
+        return y(d[[y_name]]);
+      })
+      .attr("fill", function(d){
+        return d3.select(this).datum().category;
+	  }).on("mouseover", function(d) {		
+		div.transition()		
+			.duration(50)		
+			.style("opacity", .9);		
+		div	.html("Year : " + d[[x_name]] + "<br/> Count : " + d[[y_name]])	
+			.style("left", (d3.event.pageX) + "px")		
+			.style("top", (d3.event.pageY - 28) + "px");	
+		})					
+	.on("mouseout", function(d) {		
+		div.transition()		
+			.duration(500)		
+			.style("opacity", 0);	
+	});
 }
 
 function reorderData(outOfOrder) {
@@ -489,12 +526,12 @@ function multiSelectChart(nodes, numNodes, results, read) {
         width = 850 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var x = d3.scale.linear().range([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
 
     var lineChartSvg = d3.select("#state-content1").select("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+	.attr("width", "100%")
+	.attr("height", "100%")
         .append("g").attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
@@ -525,9 +562,10 @@ function multiSelectChart(nodes, numNodes, results, read) {
 
     var valueline = [];
     for (var i = 0; i < numNodes; i++) {
-        valueline[i] = d3.svg.line()
+        valueline[i] = d3.line()
             .x(function(d) { return x(d.year); })
-            .y(function(d) { return y(d.violent_crime); });
+			.y(function(d) { return y(d.violent_crime); })
+			.curve(d3.curveCardinal);
     }
 
     //works because all our data should have the same years
@@ -544,12 +582,10 @@ function multiSelectChart(nodes, numNodes, results, read) {
     }
 
     //axes
-    var yAxis = d3.svg.axis()
-        .orient("left")
+    var yAxis = d3.axisLeft()
         .scale(y);
 
-    var xAxis = d3.svg.axis()
-        .orient("bottom")
+    var xAxis = d3.axisBottom()
         .scale(x);
 
     lineChartSvg.append("g")
@@ -559,5 +595,57 @@ function multiSelectChart(nodes, numNodes, results, read) {
 
     lineChartSvg.append("g")
         .attr("class", "axis y")
-        .call(yAxis);
+		.call(yAxis);
+		
+		    // text label for the x axis
+    lineChartSvg.append("text")
+        .attr("transform",
+            "translate(" + (width / 2) + " ," +
+            (height + margin.top + 20) + ")")
+        .style("text-anchor", "middle")
+        .text("Date");
+
+    // text label for the y axis
+    lineChartSvg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+		.attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+		.text("Count");
+
+
+		for (var i = 0; i < numNodes; i++) {
+		// create a subselection for our "dots"
+    // and on enter append a bunch of circles
+    lineChartSvg.selectAll(".dot")
+      .data(results[i], function(d){
+		  return d;
+		})
+      .enter()
+      .append("circle")
+      .attr("r", 3)
+      .attr("cx", function(d,i){
+        return x(d.year);
+      })
+      .attr("cy", function(d){
+        return y(d.violent_crime);
+      })
+      .attr("fill", function(d){
+        return d3.select(this).datum().category;
+	  }).on("mouseover", function(d) {		
+		div.transition()		
+			.duration(50)		
+			.style("opacity", .9);		
+		div	.html("Year : " + d.year + "<br/> Count : " + d.violent_crime)	
+			.style("left", (d3.event.pageX) + "px")		
+			.style("top", (d3.event.pageY - 28) + "px");	
+		})					
+	.on("mouseout", function(d) {		
+		div.transition()		
+			.duration(500)		
+			.style("opacity", 0);	
+	});
+}
+	
 }
