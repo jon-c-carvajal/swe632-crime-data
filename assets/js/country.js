@@ -231,23 +231,143 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         //.style("text-decoration", "underline")  
         .text("Violent Crime Estimates of " + stateMapInfo["name"]);
 
-    dmax = d3.max(estimates, function(d) { return d.violent_crime; });
-    y.domain([0, dmax * 1.3]);
-
-    var valueline = d3.svg.line()
+	//I'm sure theres a better way of doing this
+	var hmax = []
+    
+	hmax[0] = d3.max(estimates, function(d) { return d.aggravated_assault; });
+	//hmax[4] = d3.max(estimates, function(d) { return d.arson; });
+	//hmax[1] = d3.max(estimates, function(d) { return d.burglary; });
+	hmax[1] = d3.max(estimates, function(d) { return d.homicide; });
+	//hmax[2] = d3.max(estimates, function(d) { return d.larceny; });
+	//hmax[3] = d3.max(estimates, function(d) { return d.motor_vehicle_theft; });
+	//hmax[5] = d3.max(estimates, function(d) { return d.property_crime; });
+	hmax[2] = d3.max(estimates, function(d) { return d.rape_legacy + d.rape_revised; });
+	hmax[3] = d3.max(estimates, function(d) { return d.robbery; });
+	
+	var dmax = 0;
+	for (var i = 0; i < 4; i++) {
+		if (hmax[i] > dmax) {
+			dmax = hmax[i];
+		}
+	}
+	
+    y.domain([0, 1.3*dmax]);
+	x.domain(d3.extent(estimates, function(d) { return d.year; }));
+	
+	
+	console.log(estimates);
+	//this is for all violent crime
+    // var valueline = d3.svg.line()
+        // .x(function(d) { return x(d.year); })
+        // .y(function(d) { return y(d.violent_crime); });
+	// lineChartSvg.append("path")
+        // .data([estimates])
+        // .attr("class", "line")
+        // .attr("d", valueline)
+        // .attr("fill", "none")
+        // .attr("stroke", "red")
+        // .attr("stroke-width", "3px");
+	
+	var aaLine  = d3.svg.line()
         .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.violent_crime); });
-
-    x.domain(d3.extent(estimates, function(d) { return d.year; }));
-
-    lineChartSvg.append("path")
+        .y(function(d) { return y(d.aggravated_assault); });
+	lineChartSvg.append("path")
         .data([estimates])
         .attr("class", "line")
-        .attr("d", valueline)
+        .attr("d", aaLine)
         .attr("fill", "none")
         .attr("stroke", "red")
         .attr("stroke-width", "3px");
-
+	
+	/* var arsonLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.arson); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", arsonLine)
+        .attr("fill", "none")
+        .attr("stroke", "purple")
+        .attr("stroke-width", "3px"); */
+	
+	/* var burglaryLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.burglary); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", burglaryLine)
+        .attr("fill", "none")
+        .attr("stroke", "red")
+        .attr("stroke-width", "3px"); */
+	
+	var homicideLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.homicide); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", homicideLine)
+        .attr("fill", "none")
+        .attr("stroke", "blue")
+        .attr("stroke-width", "3px");
+	
+	/* var larcenyLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.larceny); });
+	lineChartSvg.append("path")
+	.data([estimates])
+	.attr("class", "line")
+	.attr("d", larcenyLine)
+	.attr("fill", "none")
+	.attr("stroke", "green")
+	.attr("stroke-width", "3px"); */
+		
+	/* var mvtLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.motor_vehicle_theft); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", mvtLine)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", "3px"); */
+		
+	/* var propertyCrimeLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.property_crime); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", propertyCrimeLine)
+        .attr("fill", "none")
+        .attr("stroke", "orange")
+        .attr("stroke-width", "3px"); */
+	
+	var rapeLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.rape_legacy + d.rape_revised); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", rapeLine)
+        .attr("fill", "none")
+        .attr("stroke", "yellow")
+        .attr("stroke-width", "3px");
+		
+	var robberyLine  = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.robbery); });
+	lineChartSvg.append("path")
+        .data([estimates])
+        .attr("class", "line")
+        .attr("d", robberyLine)
+        .attr("fill", "none")
+        .attr("stroke", "cyan")
+        .attr("stroke-width", "3px");
+	
+	
     // Add the Axes
     var yAxis = d3.svg.axis()
         .orient("left")
