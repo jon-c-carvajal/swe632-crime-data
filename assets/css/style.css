@@ -77,7 +77,57 @@ div.tooltip {
 }
 
 #state-content1 {
-    padding-left:15px;
-    height: 100%;
-    width: 100%;
+    height: 580px;
+    width: 880px;
+    border-radius: 70px;
+}
+
+#state-content1 {
+    transition: transform 500ms;
+    transform: scale(.35) translateX(-90%) translateY(-90%);
+}
+
+#state-content1.expanded {
+    transition: transform 500ms;
+    transform: translateX(0%) translateY(0%) scale(1);
+}
+
+#state-content1 svg {
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen1 {
+    height: 580px;
+    width: 880px;
+    position: absolute;
+    background: lightgray;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen1 {
+    background: lightgray;
+    transition: 0.3s;
+}
+
+#state-content1.expanded > #state-content-screen1{
+    opacity: 0;
+    transition: 100ms;
+}
+
+.screen-label{
+    text-align: center;
+    display: block;
+    font-size: 100px;
+    top: 36%;
+    position: relative;
+}
+
+#state-content-screen1:hover {
+    background: lightsteelblue;
+    transition: 0.3s;
 }

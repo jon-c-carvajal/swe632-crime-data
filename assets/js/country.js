@@ -6,6 +6,15 @@ var plotEntries = [{ "key": "aggravated_assault", "display_name": "Aggravated As
 { "key": "rape", "display_name": "Rape","color": "khaki" },
 { "key": "robbery", "display_name": "Robbery","color": "mediumpurple" },];
 
+$("#state-content1").click(function(d){
+    var content = $(this);
+    if(content.hasClass("expanded")){
+        content.removeClass("expanded");
+    }else{
+        content.addClass("expanded");
+    }
+});
+
 $(document).keydown(function (event) {
     if (!multiMode && event.which == "17") {
         multiMode = true;
@@ -155,7 +164,6 @@ function reset() {
         .duration(750)
         .style("stroke-width", "1.5px")
         .attr("transform", "");
-
 }
 
 function singleSelectState(html, d) {
@@ -380,3 +388,4 @@ function singleYearData(data, numNodes, pos) {
 	}
 	return results;
 }
+
