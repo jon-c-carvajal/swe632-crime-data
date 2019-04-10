@@ -15,6 +15,33 @@ $("#state-content1").click(function(d){
     }
 });
 
+$("#state-content2").click(function(d){
+    var content = $(this);
+    if(content.hasClass("expanded")){
+        content.removeClass("expanded");
+    }else{
+        content.addClass("expanded");
+    }
+});
+
+$("#state-content3").click(function(d){
+    var content = $(this);
+    if(content.hasClass("expanded")){
+        content.removeClass("expanded");
+    }else{
+        content.addClass("expanded");
+    }
+});
+
+$("#state-content4").click(function(d){
+    var content = $(this);
+    if(content.hasClass("expanded")){
+        content.removeClass("expanded");
+    }else{
+        content.addClass("expanded");
+    }
+});
+
 $(document).keydown(function (event) {
     if (!multiMode && event.which == "17") {
         multiMode = true;
@@ -146,6 +173,9 @@ function hideModal() {
     $('#selection-modal-dialog').animate({ right: '-50%' }, function (){
         $('#state-header').text("");
         $("#state-content1 svg").empty();
+		$("#state-content2 svg").empty();
+		$("#state-content3 svg").empty();
+		$("#state-content4 svg").empty();
     });
     $('#selection-modal').css('pointer-events', 'none');
 }
@@ -219,7 +249,16 @@ function reorderData(outOfOrder) {
         return 0;
       });
     inOrder.forEach(function(obj){
-        obj["rape"] = obj["rape_revised"] | obj["rape_legacy"];
+        obj["rape"] = obj["rape_revised"] + obj["rape_legacy"];
+		obj["aggravated_assaultpc"] = obj["aggravated_assault"] / obj["population"];
+		obj["arsonpc"] = obj["arson"] / obj["population"];
+		obj["burglarypc"] = obj["burglary"] / obj["population"];
+		obj["homicidepc"] = obj["homicide"] / obj["population"];
+		obj["larcenypc"] = obj["larceny"] / obj["population"];
+		obj["motor_vehicle_theftpc"] = obj["motor_vehicle_theft"] / obj["population"];
+		obj["property_crimepc"] = obj["property_crime"] / obj["population"];
+		obj["rapepc"] = obj["rape"] / obj["population"];
+		obj["robberypc"] = obj["robbery"] / obj["population"];
     });
     return inOrder;
 }
@@ -280,7 +319,6 @@ function multiSelectChart(nodes, numNodes, results, read) {
     for (var i = 0; i < numNodes; i++) {
         results[i] = reorderData(results[i]);
     }
-	console.log(results);
 	
 	//Jon, use the last variable to get other years, 0 is first year, 1 is second year, etc
 	//37 is just a random year where there are enough rape_revised to be visible, see below TODO
@@ -288,39 +326,48 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	console.log(results);
 
 	var groupKey = "state_abbr"; //hardcoding is bad
-	var keys = ["aggravated_assault", "homicide", "rape_revised", "robbery"]; //TODO - this only handles rape_revised, not all rapes
-	console.log(groupKey);
+	var violent_keys = ["aggravated_assault", "homicide", "rape", "robbery"];
+	var violentpc_keys = ["aggravated_assaultpc", "homicidepc", "rapepc", "robberypc"];
+	var nonviolent_keys = ["arson", "burglary", "larceny", "motor_vehicle_theft", "property_crime"];
+	var nonviolentpc_keys = ["arsonpc", "burglarypc", "larcenypc", "motor_vehicle_theftpc", "property_crimepc"];
+	//console.log(groupKey);
 
-	//new and improved bar chart
+	var violent_color = d3.scaleOrdinal()
+    .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	var violentpc_color = d3.scaleOrdinal()
+    .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	var nonviolent_color = d3.scaleOrdinal()
+    .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	var nonviolentpc_color = d3.scaleOrdinal()
+    .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	
+	//can reuse these on all charts
 	var margin = ({top: 10, right: 10, bottom: 20, left: 40});
 	var height = 550;
 	var width = 850;
 	
-	var y = d3.scaleLinear()
-    .domain([0, d3.max(results, d => d3.max(keys, key => d[key]))]).nice()
+	var violent_y = d3.scaleLinear()
+    .domain([0, d3.max(results, d => d3.max(violent_keys, key => d[key]))]).nice()
     .rangeRound([height - margin.bottom, margin.top]);
 	
-	var color = d3.scaleOrdinal()
-    .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
-	
-	var x0 = d3.scaleBand()
-    .domain(results.map(d => d[groupKey])) //TODO does this weird function notation work? does the hardcoding work?
+	var violent_x0 = d3.scaleBand()
+    .domain(results.map(d => d[groupKey]))
     .rangeRound([margin.left, width - margin.right])
     .paddingInner(0.1);
 	
-	x1 = d3.scaleBand()
-    .domain(keys)
-    .rangeRound([0, x0.bandwidth()])
+	violent_x1 = d3.scaleBand()
+    .domain(violent_keys)
+    .rangeRound([0, violent_x0.bandwidth()])
     .padding(0.05);
 	
-	legend = svg => {
+	violent_legend = svg => {
 		const g = svg
 		  .attr("transform", `translate(${width},0)`)
 		  .attr("text-anchor", "end")
 		  .attr("font-family", "sans-serif")
 		  .attr("font-size", 10)
 		.selectAll("g")
-		.data(color.domain().slice().reverse())
+		.data(violent_color.domain().slice().reverse())
 		.join("g")
 		  .attr("transform", (d, i) => `translate(0,${i * 20})`);
 
@@ -328,7 +375,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		  .attr("x", -19)
 		  .attr("width", 19)
 		  .attr("height", 19)
-		  .attr("fill", color);
+		  .attr("fill", violent_color);
 
 		g.append("text")
 		  .attr("x", -24)
@@ -337,14 +384,14 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		  .text(d => d);
 	};
 	
-	xAxis = g => g
+	violent_xAxis = g => g
 		.attr("transform", `translate(0,${height - margin.bottom})`)
-		.call(d3.axisBottom(x0).tickSizeOuter(0))
+		.call(d3.axisBottom(violent_x0).tickSizeOuter(0))
 		.call(g => g.select(".domain").remove());
 		
-	yAxis = g => g
+	violent_yAxis = g => g
 		.attr("transform", `translate(${margin.left},0)`)
-		.call(d3.axisLeft(y).ticks(null, "s"))
+		.call(d3.axisLeft(violent_y).ticks(null, "s"))
 		.call(g => g.select(".domain").remove())
 		.call(g => g.select(".tick:last-of-type text").clone()
         .attr("x", 3)
@@ -353,31 +400,286 @@ function multiSelectChart(nodes, numNodes, results, read) {
         .text("Number of Crimes"));
 	
 	//actually make svg
-	const barsvg = d3.select("#state-content1").select("svg")
+	const violent_barsvg = d3.select("#state-content1").select("svg")
 		.attr("width", "100%").attr("height", "100%");
 	
-	barsvg.append("g")
+	violent_barsvg.append("g")
 	.selectAll("g")
 	.data(results)
 	.join("g")
-		.attr("transform", d => `translate(${x0(d[groupKey])},0)`)
+		.attr("transform", d => `translate(${violent_x0(d[groupKey])},0)`)
 	.selectAll("rect")
-	.data(d => keys.map(key => ({key, value: d[key]})))
+	.data(d => violent_keys.map(key => ({key, value: d[key]})))
 	.join("rect")
-		.attr("x", d => x1(d.key))
-		.attr("y", d => y(d.value))
-		.attr("width", x1.bandwidth())
-		.attr("height", d => y(0) - y(d.value))
-		.attr("fill", d => color(d.key));
+		.attr("x", d => violent_x1(d.key))
+		.attr("y", d => violent_y(d.value))
+		.attr("width", violent_x1.bandwidth())
+		.attr("height", d => violent_y(0) - violent_y(d.value))
+		.attr("fill", d => violent_color(d.key));
 
-	barsvg.append("g")
-		.call(xAxis);
+	violent_barsvg.append("g")
+		.call(violent_xAxis);
 
-	barsvg.append("g")
-		.call(yAxis);
+	violent_barsvg.append("g")
+		.call(violent_yAxis);
 
-	barsvg.append("g")
-		.call(legend);
+	violent_barsvg.append("g")
+		.call(violent_legend);
+	
+	
+	
+	
+	//do all the same for violent per capita
+	var violentpc_y = d3.scaleLinear()
+    .domain([0, d3.max(results, d => d3.max(violentpc_keys, key => d[key]))]).nice()
+    .rangeRound([height - margin.bottom, margin.top]);
+	
+	var violentpc_x0 = d3.scaleBand()
+    .domain(results.map(d => d[groupKey]))
+    .rangeRound([margin.left, width - margin.right])
+    .paddingInner(0.1);
+	
+	violentpc_x1 = d3.scaleBand()
+    .domain(violentpc_keys)
+    .rangeRound([0, violentpc_x0.bandwidth()])
+    .padding(0.05);
+	
+	violentpc_legend = svg => {
+		const g = svg
+		  .attr("transform", `translate(${width},0)`)
+		  .attr("text-anchor", "end")
+		  .attr("font-family", "sans-serif")
+		  .attr("font-size", 10)
+		.selectAll("g")
+		.data(violentpc_color.domain().slice().reverse())
+		.join("g")
+		  .attr("transform", (d, i) => `translate(0,${i * 20})`);
+
+		g.append("rect")
+		  .attr("x", -19)
+		  .attr("width", 19)
+		  .attr("height", 19)
+		  .attr("fill", violentpc_color);
+
+		g.append("text")
+		  .attr("x", -24)
+		  .attr("y", 9.5)
+		  .attr("dy", "0.35em")
+		  .text(d => d);
+	};
+	
+	violentpc_xAxis = g => g
+		.attr("transform", `translate(0,${height - margin.bottom})`)
+		.call(d3.axisBottom(violentpc_x0).tickSizeOuter(0))
+		.call(g => g.select(".domain").remove());
+		
+	violentpc_yAxis = g => g
+		.attr("transform", `translate(${margin.left},0)`)
+		.call(d3.axisLeft(violentpc_y).ticks(null, "s"))
+		.call(g => g.select(".domain").remove())
+		.call(g => g.select(".tick:last-of-type text").clone()
+        .attr("x", 3)
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .text("Number of Crimes"));
+	
+	//actually make svg
+	const violentpc_barsvg = d3.select("#state-content2").select("svg")
+		.attr("width", "100%").attr("height", "100%");
+	
+	violentpc_barsvg.append("g")
+	.selectAll("g")
+	.data(results)
+	.join("g")
+		.attr("transform", d => `translate(${violentpc_x0(d[groupKey])},0)`)
+	.selectAll("rect")
+	.data(d => violentpc_keys.map(key => ({key, value: d[key]})))
+	.join("rect")
+		.attr("x", d => violentpc_x1(d.key))
+		.attr("y", d => violentpc_y(d.value))
+		.attr("width", violentpc_x1.bandwidth())
+		.attr("height", d => violentpc_y(0) - violentpc_y(d.value))
+		.attr("fill", d => violentpc_color(d.key));
+
+	violentpc_barsvg.append("g")
+		.call(violentpc_xAxis);
+
+	violentpc_barsvg.append("g")
+		.call(violentpc_yAxis);
+
+	violentpc_barsvg.append("g")
+		.call(violentpc_legend);
+		
+		
+		
+		
+		
+	//do all the same for nonviolent chart
+	//TODO functionalize this somehow?
+	
+	var nonviolent_y = d3.scaleLinear()
+    .domain([0, d3.max(results, d => d3.max(nonviolent_keys, key => d[key]))]).nice()
+    .rangeRound([height - margin.bottom, margin.top]);
+	
+	var nonviolent_x0 = d3.scaleBand()
+    .domain(results.map(d => d[groupKey]))
+    .rangeRound([margin.left, width - margin.right])
+    .paddingInner(0.1);
+	
+	nonviolent_x1 = d3.scaleBand()
+    .domain(nonviolent_keys)
+    .rangeRound([0, nonviolent_x0.bandwidth()])
+    .padding(0.05);
+	
+	nonviolent_legend = svg => {
+		const g = svg
+		  .attr("transform", `translate(${width},0)`)
+		  .attr("text-anchor", "end")
+		  .attr("font-family", "sans-serif")
+		  .attr("font-size", 10)
+		.selectAll("g")
+		.data(nonviolent_color.domain().slice().reverse())
+		.join("g")
+		  .attr("transform", (d, i) => `translate(0,${i * 20})`);
+
+		g.append("rect")
+		  .attr("x", -19)
+		  .attr("width", 19)
+		  .attr("height", 19)
+		  .attr("fill", nonviolent_color);
+
+		g.append("text")
+		  .attr("x", -24)
+		  .attr("y", 9.5)
+		  .attr("dy", "0.35em")
+		  .text(d => d);
+	};
+	
+	nonviolent_xAxis = g => g
+		.attr("transform", `translate(0,${height - margin.bottom})`)
+		.call(d3.axisBottom(nonviolent_x0).tickSizeOuter(0))
+		.call(g => g.select(".domain").remove());
+		
+	nonviolent_yAxis = g => g
+		.attr("transform", `translate(${margin.left},0)`)
+		.call(d3.axisLeft(nonviolent_y).ticks(null, "s"))
+		.call(g => g.select(".domain").remove())
+		.call(g => g.select(".tick:last-of-type text").clone()
+        .attr("x", 3)
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .text("Number of Crimes"));
+	
+	//actually make svg
+	const nonviolent_barsvg = d3.select("#state-content3").select("svg")
+		.attr("width", "100%").attr("height", "100%");
+	
+	nonviolent_barsvg.append("g")
+	.selectAll("g")
+	.data(results)
+	.join("g")
+		.attr("transform", d => `translate(${nonviolent_x0(d[groupKey])},0)`)
+	.selectAll("rect")
+	.data(d => nonviolent_keys.map(key => ({key, value: d[key]})))
+	.join("rect")
+		.attr("x", d => nonviolent_x1(d.key))
+		.attr("y", d => nonviolent_y(d.value))
+		.attr("width", nonviolent_x1.bandwidth())
+		.attr("height", d => nonviolent_y(0) - nonviolent_y(d.value))
+		.attr("fill", d => nonviolent_color(d.key));
+
+	nonviolent_barsvg.append("g")
+		.call(nonviolent_xAxis);
+
+	nonviolent_barsvg.append("g")
+		.call(nonviolent_yAxis);
+
+	nonviolent_barsvg.append("g")
+		.call(nonviolent_legend);
+		
+		
+	
+	
+	
+	var nonviolentpc_y = d3.scaleLinear()
+    .domain([0, d3.max(results, d => d3.max(nonviolentpc_keys, key => d[key]))]).nice()
+    .rangeRound([height - margin.bottom, margin.top]);
+	
+	var nonviolentpc_x0 = d3.scaleBand()
+    .domain(results.map(d => d[groupKey]))
+    .rangeRound([margin.left, width - margin.right])
+    .paddingInner(0.1);
+	
+	nonviolentpc_x1 = d3.scaleBand()
+    .domain(nonviolentpc_keys)
+    .rangeRound([0, nonviolentpc_x0.bandwidth()])
+    .padding(0.05);
+	
+	nonviolentpc_legend = svg => {
+		const g = svg
+		  .attr("transform", `translate(${width},0)`)
+		  .attr("text-anchor", "end")
+		  .attr("font-family", "sans-serif")
+		  .attr("font-size", 10)
+		.selectAll("g")
+		.data(nonviolentpc_color.domain().slice().reverse())
+		.join("g")
+		  .attr("transform", (d, i) => `translate(0,${i * 20})`);
+
+		g.append("rect")
+		  .attr("x", -19)
+		  .attr("width", 19)
+		  .attr("height", 19)
+		  .attr("fill", nonviolentpc_color);
+
+		g.append("text")
+		  .attr("x", -24)
+		  .attr("y", 9.5)
+		  .attr("dy", "0.35em")
+		  .text(d => d);
+	};
+	
+	nonviolentpc_xAxis = g => g
+		.attr("transform", `translate(0,${height - margin.bottom})`)
+		.call(d3.axisBottom(nonviolentpc_x0).tickSizeOuter(0))
+		.call(g => g.select(".domain").remove());
+		
+	nonviolentpc_yAxis = g => g
+		.attr("transform", `translate(${margin.left},0)`)
+		.call(d3.axisLeft(nonviolentpc_y).ticks(null, "s"))
+		.call(g => g.select(".domain").remove())
+		.call(g => g.select(".tick:last-of-type text").clone()
+        .attr("x", 3)
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .text("Number of Crimes"));
+	
+	//actually make svg
+	const nonviolentpc_barsvg = d3.select("#state-content4").select("svg")
+		.attr("width", "100%").attr("height", "100%");
+	
+	nonviolentpc_barsvg.append("g")
+	.selectAll("g")
+	.data(results)
+	.join("g")
+		.attr("transform", d => `translate(${nonviolentpc_x0(d[groupKey])},0)`)
+	.selectAll("rect")
+	.data(d => nonviolentpc_keys.map(key => ({key, value: d[key]})))
+	.join("rect")
+		.attr("x", d => nonviolentpc_x1(d.key))
+		.attr("y", d => nonviolentpc_y(d.value))
+		.attr("width", nonviolentpc_x1.bandwidth())
+		.attr("height", d => nonviolentpc_y(0) - nonviolentpc_y(d.value))
+		.attr("fill", d => nonviolentpc_color(d.key));
+
+	nonviolentpc_barsvg.append("g")
+		.call(nonviolentpc_xAxis);
+
+	nonviolentpc_barsvg.append("g")
+		.call(nonviolentpc_yAxis);
+
+	nonviolentpc_barsvg.append("g")
+		.call(nonviolentpc_legend);
 }
 
 //pos = 0 is earliest year, 1 is next year, etc
@@ -388,4 +690,3 @@ function singleYearData(data, numNodes, pos) {
 	}
 	return results;
 }
-
