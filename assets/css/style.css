@@ -119,7 +119,7 @@ div.tooltip {
     transition: 100ms;
 }
 
-.screen-label{
+.screen-label1{
     text-align: center;
     display: block;
     font-size: 100px;
@@ -128,6 +128,174 @@ div.tooltip {
 }
 
 #state-content-screen1:hover {
+    background: lightsteelblue;
+    transition: 0.3s;
+}
+
+#state-content2 {
+    height: 580px;
+    width: 880px;
+    border-radius: 70px;
+}
+
+#state-content2 {
+    transition: transform 500ms;
+    transform: scale(.35) translateX(-90%) translateY(-90%);
+}
+
+#state-content2.expanded {
+    transition: transform 500ms;
+    transform: translateX(0%) translateY(0%) scale(1);
+}
+
+#state-content2 svg {
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen2 {
+    height: 580px;
+    width: 880px;
+    position: absolute;
+    background: lightgray;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen2 {
+    background: lightgray;
+    transition: 0.3s;
+}
+
+#state-content2.expanded > #state-content-screen2{
+    opacity: 0;
+    transition: 100ms;
+}
+
+.screen-label2{
+    text-align: center;
+    display: block;
+    font-size: 100px;
+    top: 36%;
+    position: relative;
+}
+
+#state-content-screen2:hover {
+    background: lightsteelblue;
+    transition: 0.3s;
+}
+
+#state-content3 {
+    height: 580px;
+    width: 880px;
+    border-radius: 70px;
+}
+
+#state-content3 {
+    transition: transform 500ms;
+    transform: scale(.35) translateX(-90%) translateY(-90%);
+}
+
+#state-content3.expanded {
+    transition: transform 500ms;
+    transform: translateX(0%) translateY(0%) scale(1);
+}
+
+#state-content3 svg {
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen3 {
+    height: 580px;
+    width: 880px;
+    position: absolute;
+    background: lightgray;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen3 {
+    background: lightgray;
+    transition: 0.3s;
+}
+
+#state-content3.expanded > #state-content-screen3{
+    opacity: 0;
+    transition: 100ms;
+}
+
+.screen-label3{
+    text-align: center;
+    display: block;
+    font-size: 100px;
+    top: 36%;
+    position: relative;
+}
+
+#state-content-screen3:hover {
+    background: lightsteelblue;
+    transition: 0.3s;
+}
+
+#state-content4 {
+    height: 580px;
+    width: 880px;
+    border-radius: 70px;
+}
+
+#state-content4 {
+    transition: transform 500ms;
+    transform: scale(.35) translateX(-90%) translateY(-90%);
+}
+
+#state-content4.expanded {
+    transition: transform 500ms;
+    transform: translateX(0%) translateY(0%) scale(1);
+}
+
+#state-content4 svg {
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen4 {
+    height: 580px;
+    width: 880px;
+    position: absolute;
+    background: lightgray;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 70px;
+}
+
+#state-content-screen4 {
+    background: lightgray;
+    transition: 0.3s;
+}
+
+#state-content4.expanded > #state-content-screen4{
+    opacity: 0;
+    transition: 100ms;
+}
+
+.screen-label4{
+    text-align: center;
+    display: block;
+    font-size: 100px;
+    top: 36%;
+    position: relative;
+}
+
+#state-content-screen4:hover {
     background: lightsteelblue;
     transition: 0.3s;
 }
