@@ -80,6 +80,7 @@ div.tooltip {
     height: 203px;
     width: 308px;
     margin-bottom: 5px;
+    display: block;
 }
 
 .state-content svg {
@@ -99,6 +100,7 @@ div.tooltip {
 }
 
 .state-content-screen {
+    display: table;
     height: 203px;
     width: 308px;
     position: absolute;
@@ -123,14 +125,20 @@ div.tooltip {
 }
 
 .screen-label{
+    display: table-cell;
     text-align: center;
-    display: block;
+    vertical-align: middle;
     font-size: 36px;
-    top: 36%;
     position: relative;
 }
 
 .state-content-screen:hover {
     background: lightsteelblue;
     transition: 0.3s;
+}
+
+.state-content {
+    opacity: 100;
+    pointer-events: all;
+    transition: 250ms;
 }

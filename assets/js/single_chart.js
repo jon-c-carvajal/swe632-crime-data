@@ -108,7 +108,7 @@ function crimeEstimatesPlot(result, stateMapInfo){
     estimates = reorderData(result);
 
     crimePlot("#state-content1", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"], violentPlotEntries);
-    crimePlot("#state-content2", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"], nonViolentPlotEntries);
+    crimePlot("#state-content3", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"], nonViolentPlotEntries);
 }
 
 
