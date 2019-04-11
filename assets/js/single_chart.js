@@ -1,3 +1,14 @@
+var violentPlotEntries = [{ "key": "aggravated_assault", "display_name": "Aggravated Assault", "color": "indianred" },
+{ "key": "homicide", "display_name": "Homicide","color": "dodgerblue" },
+{ "key": "rape", "display_name": "Rape","color": "khaki" },
+{ "key": "robbery", "display_name": "Robbery","color": "mediumpurple" },
+{ "key": "burglary", "display_name": "Burglary","color": "green" }];
+
+var nonViolentPlotEntries = [{ "key": "larceny", "display_name": "Larceny", "color": "khaki" },
+{ "key": "motor_vehicle_theft", "display_name": "Motor Vehicle Theft","color": "dodgerblue" },
+{ "key": "arson", "display_name": "Arson","color": "indianred" },
+{ "key": "property_crime", "display_name": "Property Crime","color": "mediumpurple" }];
+
 function populateDots(lineChartSvg, data, display_name, x_name, y_name, x, y, color) {
     // create a subselection for our "dots"
     // and on enter append a bunch of circles
@@ -93,11 +104,15 @@ function drawLegend(lineChartSvg, plotEntries) {
         .style("font-size", 15);
 }
 
-
-function crimeEstimatesPlot(result, stateMapInfo) {
-
+function crimeEstimatesPlot(result, stateMapInfo){
     estimates = reorderData(result);
 
+    crimePlot("#state-content1", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"], violentPlotEntries);
+    crimePlot("#state-content2", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"], nonViolentPlotEntries);
+}
+
+
+function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries) {
     //putting in line chart
     var margin = { top: 20, right: 20, bottom: 30, left: 85 },
         width = 850 - margin.left - margin.right,
@@ -110,9 +125,7 @@ function crimeEstimatesPlot(result, stateMapInfo) {
     var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
 
-    var lineChartSvg = d3.select("#state-content1").select("svg")
-        .attr("width", "100%")
-        .attr("height", "100%")
+    var lineChartSvg = d3.select(svgId).select("svg")
         .append("g").attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
@@ -123,18 +136,17 @@ function crimeEstimatesPlot(result, stateMapInfo) {
         .attr("text-anchor", "middle")
         .style("font-size", "28px")
         //.style("text-decoration", "underline")  
-        .text("Violent Crime Estimates of " + stateMapInfo["name"]);
+        .text(title);
 
     //I'm sure theres a better way of doing this
     var hmax = []
 
-    hmax[0] = d3.max(estimates, function (d) { return d.aggravated_assault; });
-    hmax[1] = d3.max(estimates, function (d) { return d.homicide; });
-    hmax[2] = d3.max(estimates, function (d) { return d.rape; });
-    hmax[3] = d3.max(estimates, function (d) { return d.robbery; });
+    for(var i = 0; i < plotEntries.length; i++){
+        hmax[i] = d3.max(estimates, function (d) { return d[plotEntries[i]["key"]]; });
+    }
 
     var dmax = 0;
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < plotEntries.length; i++) {
         if (hmax[i] > dmax) {
             dmax = hmax[i];
         }

@@ -76,58 +76,61 @@ div.tooltip {
     pointer-events: none;
 }
 
-#state-content1 {
+.state-content {
+    height: 203px;
+    width: 308px;
+    margin-bottom: 5px;
+}
+
+.state-content svg {
+    height: 203px;
+    width: 308px;
+    opacity: 0;
+    transition: 500ms;
+    pointer-events: none;
+}
+
+.state-content.state-content.expanded svg {
     height: 580px;
     width: 880px;
-    border-radius: 70px;
+    opacity: 100;
+    transition: 500ms;
+    pointer-events: all;
 }
 
-#state-content1 {
-    transition: transform 500ms;
-    transform: scale(.35) translateX(-90%) translateY(-90%);
-}
-
-#state-content1.expanded {
-    transition: transform 500ms;
-    transform: translateX(0%) translateY(0%) scale(1);
-}
-
-#state-content1 svg {
-    border-style: solid;
-    border-width: 5px;
-    border-radius: 70px;
-}
-
-#state-content-screen1 {
-    height: 580px;
-    width: 880px;
+.state-content-screen {
+    height: 203px;
+    width: 308px;
     position: absolute;
     background: lightgray;
     cursor: pointer;
     border-style: solid;
-    border-width: 5px;
-    border-radius: 70px;
+    border-width: 2px;
+    border-radius: 30px;
 }
 
-#state-content-screen1 {
+.state-content-screen {
     background: lightgray;
     transition: 0.3s;
 }
 
-#state-content1.expanded > #state-content-screen1{
+.state-content.expanded > .state-content-screen {
+    height: 580px;
+    width: 880px;
     opacity: 0;
-    transition: 100ms;
+    transition: 500ms;
+    pointer-events: none;
 }
 
 .screen-label{
     text-align: center;
     display: block;
-    font-size: 100px;
+    font-size: 36px;
     top: 36%;
     position: relative;
 }
 
-#state-content-screen1:hover {
+.state-content-screen:hover {
     background: lightsteelblue;
     transition: 0.3s;
 }

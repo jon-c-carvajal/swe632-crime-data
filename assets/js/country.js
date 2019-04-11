@@ -1,15 +1,12 @@
 var multiMode = false;
 var selectedNodes = {};
 
-var plotEntries = [{ "key": "aggravated_assault", "display_name": "Aggravated Assault", "color": "indianred" },
-{ "key": "homicide", "display_name": "Homicide","color": "dodgerblue" },
-{ "key": "rape", "display_name": "Rape","color": "khaki" },
-{ "key": "robbery", "display_name": "Robbery","color": "mediumpurple" },];
-
-$("#state-content1").click(function(d){
+$(".state-content").click(function(d){
+    $(".state-content").not(this).hide(500);
     var content = $(this);
     if(content.hasClass("expanded")){
         content.removeClass("expanded");
+        $(".state-content").not(this).show(250);
     }else{
         content.addClass("expanded");
     }
@@ -145,13 +142,16 @@ function showModal() {
 function hideModal() {
     $('#selection-modal-dialog').animate({ right: '-50%' }, function (){
         $('#state-header').text("");
-        $("#state-content1 svg").empty();
+        $(".state-content svg").empty();
     });
     $('#selection-modal').css('pointer-events', 'none');
 }
 
 function reset() {
     hideModal();
+    $(".state-content").removeClass('expanded');
+    $(".state-content").show(250);
+
     active.classed("active", false);
     active = d3.select(null);
 
