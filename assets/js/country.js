@@ -698,7 +698,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	//var yValue = function(d) { return d["rapepc"];}; //This is the version that works
     var yScale = d3.scaleLinear().range([height, 0]);
     var yMap = function(d) { return yScale(yValue(d));};	
-	var yAxis = d3.axisLeft().scale(yScale,yScale2);
+	var yAxis = d3.axisLeft().scale(yScale);
 	
 	//setup fill color
 	var cValue = function(d) { return d.state_abbr;};
