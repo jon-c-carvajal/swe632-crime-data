@@ -169,14 +169,8 @@ function reset() {
 
 function singleSelectState(html, d) {
     if (active.node() === html) return reset();
-
-    $("#state-content2").addClass("hidden").hide();
-    $("#state-content4").addClass("hidden").hide();
-    // var chartSvg1 = d3.select("#state-content1").select("svg");
-    // var chartSvg2 = d3.select("#state-content2").select("svg");
-
-    // chartSvg1.attr("width", 500).attr("height", 500);
-    // chartSvg2.attr("width", 500).attr("height", 800);
+	
+	$("#state-content5").addClass("hidden").hide();
 
     var stateName = stateMap[d.id]["name"];
     var stateAbbr = stateMap[d.id]["abbr"];

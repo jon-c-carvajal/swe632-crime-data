@@ -4,10 +4,21 @@ var violentPlotEntries = [{ "key": "aggravated_assault", "display_name": "Aggrav
 { "key": "robbery", "display_name": "Robbery","color": "mediumpurple" },
 { "key": "burglary", "display_name": "Burglary","color": "green" }];
 
+var violentPlotEntriesPC = [{ "key": "aggravated_assaultpc", "display_name": "Aggravated Assault", "color": "indianred" },
+{ "key": "homicidepc", "display_name": "Homicide","color": "dodgerblue" },
+{ "key": "rapepc", "display_name": "Rape","color": "khaki" },
+{ "key": "robberypc", "display_name": "Robbery","color": "mediumpurple" },
+{ "key": "burglarypc", "display_name": "Burglary","color": "green" }];
+
 var nonViolentPlotEntries = [{ "key": "larceny", "display_name": "Larceny", "color": "khaki" },
 { "key": "motor_vehicle_theft", "display_name": "Motor Vehicle Theft","color": "dodgerblue" },
 { "key": "arson", "display_name": "Arson","color": "indianred" },
 { "key": "property_crime", "display_name": "Property Crime","color": "mediumpurple" }];
+
+var nonViolentPlotEntriesPC = [{ "key": "larcenypc", "display_name": "Larceny", "color": "khaki" },
+{ "key": "motor_vehicle_theftpc", "display_name": "Motor Vehicle Theft","color": "dodgerblue" },
+{ "key": "arsonpc", "display_name": "Arson","color": "indianred" },
+{ "key": "property_crimepc", "display_name": "Property Crime","color": "mediumpurple" }];
 
 function populateDots(lineChartSvg, data, display_name, x_name, y_name, x, y, color) {
     // create a subselection for our "dots"
@@ -108,7 +119,9 @@ function crimeEstimatesPlot(result, stateMapInfo){
     estimates = reorderData(result);
 
     crimePlot("#state-content1", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"], violentPlotEntries);
+	crimePlot("#state-content2", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 People", violentPlotEntriesPC);
     crimePlot("#state-content3", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"], nonViolentPlotEntries);
+	crimePlot("#state-content4", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 People", nonViolentPlotEntriesPC);
 }
 
 
