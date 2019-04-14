@@ -216,22 +216,43 @@ function singleSelectState(html, d) {
 }
 
 function reorderData(outOfOrder) {
+	console.log("JLM");
+	console.log(outOfOrder);
+	var state_id = outOfOrder.results[0].state_id;
+	console.log(state_id);
+	
+	//Making a big assumption here. Since we only have last years data, we are using it and
+	// assuming it tracks with population of that state over time
+	var mostRecentNumberUnauthorizedImmigrants = stateMap[state_id].estimated_illegal_immigrants;
+	console.log(mostRecentNumberUnauthorizedImmigrants);
+	
     var inOrder = outOfOrder.results.sort(function (a, b){
         if (a["year"] > b["year"]) return 1;
         if (b["year"] > a["year"]) return -1;
         return 0;
       });
+	
+	//38 is our current latest year
+	var mostRecentPopulation = inOrder[38].population;
+	console.log(inOrder[38].population);
+	var mostRecentPercentageOfPopUnauthorized = 100 * mostRecentNumberUnauthorizedImmigrants/mostRecentPopulation;
+	console.log(mostRecentPercentageOfPopUnauthorized);
+	
+	//showing crime values per 1,000 persons in state to get larger numbers
+	perCapitaNumber = 1000;
+	
     inOrder.forEach(function(obj){
         obj["rape"] = obj["rape_revised"] + obj["rape_legacy"];
-		obj["aggravated_assaultpc"] = obj["aggravated_assault"] / obj["population"];
-		obj["arsonpc"] = obj["arson"] / obj["population"];
-		obj["burglarypc"] = obj["burglary"] / obj["population"];
-		obj["homicidepc"] = obj["homicide"] / obj["population"];
-		obj["larcenypc"] = obj["larceny"] / obj["population"];
-		obj["motor_vehicle_theftpc"] = obj["motor_vehicle_theft"] / obj["population"];
-		obj["property_crimepc"] = obj["property_crime"] / obj["population"];
-		obj["rapepc"] = obj["rape"] / obj["population"];
-		obj["robberypc"] = obj["robbery"] / obj["population"];
+		obj["aggravated_assaultpc"] = obj["aggravated_assault"] / obj["population"] * perCapitaNumber;
+		obj["arsonpc"] = obj["arson"] / obj["population"] * perCapitaNumber;
+		obj["burglarypc"] = obj["burglary"] / obj["population"] * perCapitaNumber;
+		obj["homicidepc"] = obj["homicide"] / obj["population"] * perCapitaNumber;
+		obj["larcenypc"] = obj["larceny"] / obj["population"] * perCapitaNumber;
+		obj["motor_vehicle_theftpc"] = obj["motor_vehicle_theft"] / obj["population"] * perCapitaNumber;
+		obj["property_crimepc"] = obj["property_crime"] / obj["population"] * perCapitaNumber;
+		obj["rapepc"] = obj["rape"] / obj["population"] * perCapitaNumber;
+		obj["robberypc"] = obj["robbery"] / obj["population"] * perCapitaNumber;
+		obj["percentUnauthorizedImmigrant"] = mostRecentPercentageOfPopUnauthorized;
     });
     return inOrder;
 }
@@ -294,21 +315,24 @@ function multiSelectChart(nodes, numNodes, results, read) {
     }
 	
 	//Jon, use the last variable to get other years, 0 is first year, 1 is second year, etc
-	//37 is just a random year where there are enough rape_revised to be visible, see below TODO
-	results = singleYearData(results, numNodes, 37);
+	//38 is most recent year
+	results = singleYearData(results, numNodes, 38);
 	console.log(results);
 
 	var groupKey = "state_abbr"; //hardcoding is bad
 	var violent_keys = ["aggravated_assault", "homicide", "rape", "robbery"];
 	var violentpc_keys = ["aggravated_assaultpc", "homicidepc", "rapepc", "robberypc"];
+	var violentpii_keys = ["aggravated_assaultpii", "homicidepii", "rapepii", "robberypii"];
 	var nonviolent_keys = ["arson", "burglary", "larceny", "motor_vehicle_theft", "property_crime"];
 	var nonviolentpc_keys = ["arsonpc", "burglarypc", "larcenypc", "motor_vehicle_theftpc", "property_crimepc"];
-	//console.log(groupKey);
 
 	var violent_color = d3.scaleOrdinal()
     .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 	var violentpc_color = d3.scaleOrdinal()
     .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	var violentpii_color = d3.scaleOrdinal()
+    .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	
 	var nonviolent_color = d3.scaleOrdinal()
     .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 	var nonviolentpc_color = d3.scaleOrdinal()
@@ -653,13 +677,157 @@ function multiSelectChart(nodes, numNodes, results, read) {
 
 	nonviolentpc_barsvg.append("g")
 		.call(nonviolentpc_legend);
+		
+	
+	//violent per capita compared to illegal/unauthorized immigrant scatterplot
+	
+	//reorganize data for scatter plot?
+	//crime number, crime type, state?
+	var scatterResults = createScatterPlotResults(results);
+	console.log(scatterResults);
+	console.log(results);
+	
+	//setup x
+	var xValue = function(d) { return d["percentUnauthorizedImmigrant"];};
+	var xScale = d3.scaleLinear().range([0, width]);
+	var xMap = function(d) { return xScale(xValue(d));};
+	var xAxis = d3.axisBottom().scale(xScale);
+	
+	// setup y
+	var yValue = function(d) { return d["crime_amount"];}; //scatterResults version
+	//var yValue = function(d) { return d["rapepc"];}; //This is the version that works
+    var yScale = d3.scaleLinear().range([height, 0]);
+    var yMap = function(d) { return yScale(yValue(d));};	
+	var yAxis = d3.axisLeft().scale(yScale,yScale2);
+	
+	//setup fill color
+	var cValue = function(d) { return d.state_abbr;};
+	var color = d3.scaleOrdinal(d3.schemeCategory10);
+	
+	// add the graph canvas to the body of the webpage
+	var scatterSvg = d3.select("#state-content5").select("svg")
+		.attr("width", width - margin.left - margin.right)
+		.attr("height", height - margin.top - margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		
+	// add the tooltip area to the webpage
+	var tooltip = d3.select("body").append("div")
+		.attr("class", "tooltip")
+		.style("opacity", 0);
+		
+	// don't want dots overlapping axis, so add in buffer to data domain
+	xScale.domain([d3.min(results, xValue)-1, d3.max(results, xValue)+1]);
+	yScale.domain([d3.min(results, yValue)-1, d3.max(results, yValue)+1]);
+	
+	// x-axis
+	scatterSvg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis)
+	.append("text")
+		.attr("class", "label")
+		.attr("x", width)
+		.attr("y", -6)
+		.style("text-anchor", "end")
+		.text("Percentage of Population Unauthorized Immigrant");
+	
+	// y-axis
+	scatterSvg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+	.append("text")
+		.attr("class", "label")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Violent Crimes Per Capita");
+	
+	console.log(xMap);
+	console.log(yMap);
+	
+	// draw dots
+	scatterSvg.selectAll(".dot")
+		.data(scatterResults) //scatterResults version
+		//.data(results) //this is the version that works
+    .enter().append("circle")
+		.attr("class", "dot")
+		.attr("r", 6)
+		.attr("cx", xMap)
+		.attr("cy", yMap)
+		.style("fill", function(d) { return color(cValue(d));}) 
+		.on("mouseover", function(d) {
+			tooltip.transition()
+               .duration(200)
+               .style("opacity", .9);
+			tooltip.html(d["crime_name"] + "<br/> (" + xValue(d)  //scatterResults version
+			// tooltip.html(d["state_abbr"] + "1" +"<br/> (" + xValue(d) //This is the version that works
+	        + ", " + yValue(d) + ")")
+               .style("left", (d3.event.pageX + 5) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+		})
+		.on("mouseout", function(d) {
+			tooltip.transition()
+               .duration(500)
+               .style("opacity", 0);
+		});
+	
+	// draw legend
+	var legend = scatterSvg.selectAll(".legend")
+		.data(color.domain())
+    .enter().append("g")
+		.attr("class", "legend")
+		.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+	// draw legend colored rectangles
+	legend.append("rect")
+		.attr("x", width - 50)
+		.attr("width", 18)
+		.attr("height", 18)
+		.style("fill", color);
+
+	// draw legend text
+	legend.append("text")
+		.attr("x", width - 10)
+		.attr("y", 9)
+		.attr("dy", ".35em")
+		.style("text-anchor", "end")
+		.text(function(d) { return d;})
 }
 
 //pos = 0 is earliest year, 1 is next year, etc
 function singleYearData(data, numNodes, pos) {
+	console.log(data);
 	var results = [];
 	for (var i = 0; i < numNodes; i++) {
 		results[i] = data[i][pos];
 	}
 	return results;
+}
+
+function createScatterPlotResults(results) {
+	console.log("JLM2");
+	console.log(results);
+	console.log(results.length);
+	var scatterResults = [];
+	for (var i = 0; i < results.length*4; i++) {
+		scatterResults[i] = new Object();
+		if (i % 4 == 0) {
+			scatterResults[i].crime_amount = Number(results[Math.floor(i/4)].aggravated_assaultpc);
+			scatterResults[i].crime_name = "Aggravated Assault Per Capita"
+		} else if (i % 4 == 1) {
+			scatterResults[i].crime_amount = Number(results[Math.floor(i/4)].homicidepc);
+			scatterResults[i].crime_name = "Homicide Per Capita"
+		} else if (i % 4 == 2) {
+			scatterResults[i].crime_amount = Number(results[Math.floor(i/4)].rapepc);
+			scatterResults[i].crime_name = "Rape Per Capita"
+		} else if (i % 4 == 3) {
+			scatterResults[i].crime_amount = Number(results[Math.floor(i/4)].robberypc);
+			scatterResults[i].crime_name = "Robbery Per Capita"
+		}
+		scatterResults[i].state_abbr = results[Math.floor(i/4)].state_abbr;
+		scatterResults[i].percentUnauthorizedImmigrant = Number(results[Math.floor(i/4)].percentUnauthorizedImmigrant);
+	}
+	return scatterResults;
 }
