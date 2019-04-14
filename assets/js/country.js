@@ -193,7 +193,7 @@ function singleSelectState(html, d) {
         },
         success: function (result) {
             console.log(result);
-            crimeEstimatesPlot(result, stateMap[d.id]);
+            crimeEstimatesPlot(result, d, stateMap[d.id]);
             showModal();
         }
     });
@@ -216,10 +216,10 @@ function singleSelectState(html, d) {
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 }
 
-function reorderData(outOfOrder) {
+function reorderData(outOfOrder, d) {
 	console.log("JLM");
 	console.log(outOfOrder);
-	var state_id = outOfOrder.results[0].state_id;
+	var state_id = d.id
 	console.log(state_id);
 	
 	//Making a big assumption here. Since we only have last years data, we are using it and
@@ -234,8 +234,7 @@ function reorderData(outOfOrder) {
       });
 	
 	//38 is our current latest year
-	var mostRecentPopulation = inOrder[38].population;
-	console.log(inOrder[38].population);
+	var mostRecentPopulation = inOrder[inOrder.length-1].population;
 	var mostRecentPercentageOfPopUnauthorized = 100 * mostRecentNumberUnauthorizedImmigrants/mostRecentPopulation;
 	console.log(mostRecentPercentageOfPopUnauthorized);
 	
@@ -316,12 +315,12 @@ function multiSelectDataRetriever(d, numNodes, results, read) {
 function multiSelectChart(nodes, numNodes, results, read) {
     //need to get both sets of data in correct order
     for (var i = 0; i < numNodes; i++) {
-        results[i] = reorderData(results[i]);
+        results[i] = reorderData(results[i], nodes[i]);
     }
 	
 	//Jon, use the last variable to get other years, 0 is first year, 1 is second year, etc
 	//38 is most recent year
-	results = singleYearData(results, numNodes, 38);
+	results = singleYearData(results, numNodes, results.length - 1);
 	console.log(results);
 
 	var groupKey = "state_abbr"; //hardcoding is bad
@@ -722,8 +721,8 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		.style("opacity", 0);
 		
 	// don't want dots overlapping axis, so add in buffer to data domain
-	xScale.domain([d3.min(results, xValue)-1, d3.max(results, xValue)+1]);
-	yScale.domain([d3.min(results, yValue)-1, d3.max(results, yValue)+1]);
+	xScale.domain([d3.min(scatterResults, xValue)-1, d3.max(scatterResults, xValue)+1]);
+	yScale.domain([d3.min(scatterResults, yValue)-1, d3.max(scatterResults, yValue)+1]);
 	
 	// x-axis
 	scatterSvg.append("g")
@@ -733,7 +732,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	.append("text")
 		.attr("class", "label")
 		.attr("x", width)
-		.attr("y", -6)
+		.attr("y", height - 6)
 		.style("text-anchor", "end")
 		.text("Percentage of Population Unauthorized Immigrant");
 	
@@ -787,17 +786,17 @@ function multiSelectChart(nodes, numNodes, results, read) {
 
 	// draw legend colored rectangles
 	legend.append("rect")
-		.attr("x", width - 50)
+		.attr("x", width - 55)
 		.attr("width", 18)
 		.attr("height", 18)
 		.style("fill", color);
 
 	// draw legend text
 	legend.append("text")
-		.attr("x", width - 10)
+		.attr("x", width - 35)
 		.attr("y", 9)
 		.attr("dy", ".35em")
-		.style("text-anchor", "end")
+		.style("text-anchor", "start")
 		.text(function(d) { return d;})
 }
 

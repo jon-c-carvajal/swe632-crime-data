@@ -121,8 +121,8 @@ function drawLegend(lineChartSvg, plotEntries) {
         .style("font-size", 15);
 }
 
-function crimeEstimatesPlot(result, stateMapInfo){
-    estimates = reorderData(result);
+function crimeEstimatesPlot(result, d, stateMapInfo){
+    estimates = reorderData(result, d);
 
     crimePlot("#state-content1", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"], violentPlotEntries);
 	crimePlot("#state-content2", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 People", violentPlotEntriesPC);
