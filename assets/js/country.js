@@ -169,8 +169,15 @@ function reset() {
 
 function singleSelectState(html, d) {
     if (active.node() === html) return reset();
-	
+		
+    $("#state-content2").addClass("hidden").hide();
+	$("#state-content4").addClass("hidden").hide();
 	$("#state-content5").addClass("hidden").hide();
+    // var chartSvg1 = d3.select("#state-content1").select("svg");
+    // var chartSvg2 = d3.select("#state-content2").select("svg");
+
+    // chartSvg1.attr("width", 500).attr("height", 500);
+    // chartSvg2.attr("width", 500).attr("height", 800);
 
     var stateName = stateMap[d.id]["name"];
     var stateAbbr = stateMap[d.id]["abbr"];
@@ -252,6 +259,10 @@ function reorderData(outOfOrder) {
 }
 
 function multiSelectState(nodes, numNodes) {
+
+	// hide crime vs gun crime
+	$("#state-content6").addClass("hidden").hide();
+
     //Populate modal with svg
     console.log("in multiSelectState")
 
@@ -824,4 +835,101 @@ function createScatterPlotResults(results) {
 		scatterResults[i].percentUnauthorizedImmigrant = Number(results[Math.floor(i/4)].percentUnauthorizedImmigrant);
 	}
 	return scatterResults;
+}
+
+
+// Yang 04/14/2019 reorder and add gun data
+function reorderData_add_gunData(outOfOrder) {
+	console.log("Yang");
+	console.log(outOfOrder);
+	var state_id = outOfOrder.results[0].state_id;
+	console.log(state_id);
+	
+	// [todo] Add gun control data here. gun control data is not available ATM.
+	// For now (temporarily), sample manual data will be added
+	
+	var mostRecentNumberUnauthorizedImmigrants = stateMap[state_id].estimated_illegal_immigrants;
+	// console.log(mostRecentNumberUnauthorizedImmigrants);
+	
+    var inOrder = outOfOrder.results.sort(function (a, b){
+        if (a["year"] > b["year"]) return 1;
+        if (b["year"] > a["year"]) return -1;
+        return 0;
+      });
+	
+	//38 is our current latest year
+	var mostRecentPopulation = inOrder[38].population;
+	console.log(inOrder[38].population);
+	var mostRecentPercentageOfPopUnauthorized = 100 * mostRecentNumberUnauthorizedImmigrants/mostRecentPopulation;
+	console.log(mostRecentPercentageOfPopUnauthorized);
+	
+	// create gun_death dataset state_id, state_abbr, year, gun_death_count
+	// these are made-up numbers
+	var gun_death_list = [
+		{ state_id: 0, state_abbr: 'xx', year: 1979, gun_count: 987 },
+		{ state_id: 0, state_abbr: 'xx', year: 1980, gun_count: 922 },
+		{ state_id: 0, state_abbr: 'xx', year: 1981, gun_count: 901 },
+		{ state_id: 0, state_abbr: 'xx', year: 1982, gun_count: 855 },
+		{ state_id: 0, state_abbr: 'xx', year: 1983, gun_count: 812 },
+		{ state_id: 0, state_abbr: 'xx', year: 1984, gun_count: 789 },
+		{ state_id: 0, state_abbr: 'xx', year: 1985, gun_count: 767 },
+		{ state_id: 0, state_abbr: 'xx', year: 1986, gun_count: 833 },
+		{ state_id: 0, state_abbr: 'xx', year: 1987, gun_count: 942 },
+		{ state_id: 0, state_abbr: 'xx', year: 1988, gun_count: 1011 },
+		{ state_id: 0, state_abbr: 'xx', year: 1989, gun_count: 1187 },
+		{ state_id: 0, state_abbr: 'xx', year: 1990, gun_count: 1389 },
+		{ state_id: 0, state_abbr: 'xx', year: 1991, gun_count: 1587 },
+		{ state_id: 0, state_abbr: 'xx', year: 1992, gun_count: 1611 },
+		{ state_id: 0, state_abbr: 'xx', year: 1993, gun_count: 1654 },
+		{ state_id: 0, state_abbr: 'xx', year: 1994, gun_count: 1421 },
+		{ state_id: 0, state_abbr: 'xx', year: 1995, gun_count: 1202 },
+		{ state_id: 0, state_abbr: 'xx', year: 1996, gun_count: 1111 },
+		{ state_id: 0, state_abbr: 'xx', year: 1997, gun_count: 1022 },
+		{ state_id: 0, state_abbr: 'xx', year: 1998, gun_count: 913 },
+		{ state_id: 0, state_abbr: 'xx', year: 1999, gun_count: 888 },
+		{ state_id: 0, state_abbr: 'xx', year: 2000, gun_count: 722 },
+		{ state_id: 0, state_abbr: 'xx', year: 2001, gun_count: 745 },
+		{ state_id: 0, state_abbr: 'xx', year: 2002, gun_count: 776 },
+		{ state_id: 0, state_abbr: 'xx', year: 2003, gun_count: 799 },
+		{ state_id: 0, state_abbr: 'xx', year: 2004, gun_count: 765 },
+		{ state_id: 0, state_abbr: 'xx', year: 2005, gun_count: 720 },
+		{ state_id: 0, state_abbr: 'xx', year: 2006, gun_count: 733 },
+		{ state_id: 0, state_abbr: 'xx', year: 2007, gun_count: 777 },
+		{ state_id: 0, state_abbr: 'xx', year: 2008, gun_count: 801 },
+		{ state_id: 0, state_abbr: 'xx', year: 2009, gun_count: 814 },
+		{ state_id: 0, state_abbr: 'xx', year: 2010, gun_count: 855 },
+		{ state_id: 0, state_abbr: 'xx', year: 2011, gun_count: 888 },
+		{ state_id: 0, state_abbr: 'xx', year: 2012, gun_count: 912 },
+		{ state_id: 0, state_abbr: 'xx', year: 2013, gun_count: 934 },
+		{ state_id: 0, state_abbr: 'xx', year: 2014, gun_count: 987 },
+		{ state_id: 0, state_abbr: 'xx', year: 2015, gun_count: 999 },
+		{ state_id: 0, state_abbr: 'xx', year: 2016, gun_count: 1049 },
+		{ state_id: 0, state_abbr: 'xx', year: 2017, gun_count: 1089 }
+	];
+	
+	//showing crime values per 1,000 persons in state to get larger numbers
+	perCapitaNumber = 1000;
+	
+    inOrder.forEach(function(obj){
+        obj["rape"] = obj["rape_revised"] + obj["rape_legacy"];
+		obj["aggravated_assaultpc"] = obj["aggravated_assault"] / obj["population"] * perCapitaNumber;
+		obj["arsonpc"] = obj["arson"] / obj["population"] * perCapitaNumber;
+		obj["burglarypc"] = obj["burglary"] / obj["population"] * perCapitaNumber;
+		obj["homicidepc"] = obj["homicide"] / obj["population"] * perCapitaNumber;
+		obj["larcenypc"] = obj["larceny"] / obj["population"] * perCapitaNumber;
+		obj["motor_vehicle_theftpc"] = obj["motor_vehicle_theft"] / obj["population"] * perCapitaNumber;
+		obj["property_crimepc"] = obj["property_crime"] / obj["population"] * perCapitaNumber;
+		obj["rapepc"] = obj["rape"] / obj["population"] * perCapitaNumber;
+		obj["robberypc"] = obj["robbery"] / obj["population"] * perCapitaNumber;
+		obj["percentUnauthorizedImmigrant"] = mostRecentPercentageOfPopUnauthorized;
+
+		// match with state and year
+		// state_abbr: "VA"		state_id: 51		violent_crime: 15642		year: 1979
+
+		// [todo] multiply 30 to just show the nunbers in the middle of chart
+		var _gun_count = gun_death_list.find(x => x.year === obj["year"]).gun_count * 30;
+		obj["gun_death"] = _gun_count; 
+
+    });
+    return inOrder;
 }
