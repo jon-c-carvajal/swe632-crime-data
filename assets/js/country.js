@@ -344,8 +344,8 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	
 	//can reuse these on all charts
 	var margin = ({top: 10, right: 10, bottom: 20, left: 40});
-	var height = 550;
-	var width = 850;
+	var height = 550 - margin.top - margin.bottom;
+	var width = 850 - margin.left - margin.right;
 	
 	var violent_y = d3.scaleLinear()
     .domain([0, d3.max(results, d => d3.max(violent_keys, key => d[key]))]).nice()
@@ -727,26 +727,30 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	// x-axis
 	scatterSvg.append("g")
 		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis)
-	.append("text")
-		.attr("class", "label")
-		.attr("x", width)
-		.attr("y", height - 6)
-		.style("text-anchor", "end")
-		.text("Percentage of Population Unauthorized Immigrant");
-	
+		.attr("transform", "translate(0," + (height) + ")")
+		.call(xAxis);
 	// y-axis
 	scatterSvg.append("g")
 		.attr("class", "y axis")
-		.call(yAxis)
-	.append("text")
-		.attr("class", "label")
-		.attr("transform", "rotate(-90)")
-		.attr("y", 6)
-		.attr("dy", ".71em")
-		.style("text-anchor", "end")
-		.text("Violent Crimes Per Capita");
+		.call(yAxis);
+
+		    // text label for the x axis
+	scatterSvg.append("text")
+			.attr("transform",
+				"translate(" + (width / 2) + " ," +
+				(height + margin.top + 20) + ")")
+			.style("text-anchor", "middle")
+			.text("Percentage of Population Unauthorized Immigrant");
+	
+		// text label for the y axis
+	scatterSvg.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 0 - margin.left)
+			.attr("x", 0 - (height / 2))
+			.attr("dy", "1em")
+			.style("text-anchor", "middle")
+			.text("Violent Crimes Per Capita");
+			
 	
 	console.log(xMap);
 	console.log(yMap);
@@ -857,8 +861,8 @@ function reorderData_add_gunData(outOfOrder) {
       });
 	
 	//38 is our current latest year
-	var mostRecentPopulation = inOrder[38].population;
-	console.log(inOrder[38].population);
+	var mostRecentPopulation = inOrder[inOrder.length-1].population;
+	console.log(inOrder[inOrder.length-1].population);
 	var mostRecentPercentageOfPopUnauthorized = 100 * mostRecentNumberUnauthorizedImmigrants/mostRecentPopulation;
 	console.log(mostRecentPercentageOfPopUnauthorized);
 	
