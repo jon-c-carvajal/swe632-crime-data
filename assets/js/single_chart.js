@@ -9,6 +9,12 @@ var nonViolentPlotEntries = [{ "key": "larceny", "display_name": "Larceny", "col
 { "key": "arson", "display_name": "Arson","color": "indianred" },
 { "key": "property_crime", "display_name": "Property Crime","color": "mediumpurple" }];
 
+var gunPlotEntries = [{ "key": "aggravated_assault", "display_name": "Aggravated Assault", "color": "indianred" },
+{ "key": "homicide", "display_name": "Homicide","color": "dodgerblue" },
+{ "key": "rape", "display_name": "Rape","color": "khaki" },
+{ "key": "gun_death", "display_name": "Gun Death","color": "mediumpurple" },
+{ "key": "burglary", "display_name": "Burglary","color": "green" }];
+
 function populateDots(lineChartSvg, data, display_name, x_name, y_name, x, y, color) {
     // create a subselection for our "dots"
     // and on enter append a bunch of circles
@@ -109,8 +115,12 @@ function crimeEstimatesPlot(result, stateMapInfo){
 
     crimePlot("#state-content1", estimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"], violentPlotEntries);
     crimePlot("#state-content3", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"], nonViolentPlotEntries);
-}
 
+    estimates = reorderData_add_gunData(result);
+
+    crimePlot("#state-content6", estimates, stateMapInfo, "Crime vs Gun Crime of " + stateMapInfo["name"], gunPlotEntries);
+
+}
 
 function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries) {
     //putting in line chart
