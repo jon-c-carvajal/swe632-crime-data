@@ -1,14 +1,23 @@
 var multiMode = false;
 var selectedNodes = {};
 
-$(".state-content").click(function(d){
-    $(".state-content").not(this).not(".hidden").hide(150);
-    var content = $(this);
-    if(content.hasClass("expanded")){
-        content.removeClass("expanded");
-        $(".state-content").not(this).not(".hidden").show(100);
-    }else{
+$(".state-content-screen").click(function(d){
+	var content = $(this).parent();
+	$(".state-content").not(content).not(".hidden").hide(150);
+	
+    if(!content.hasClass("expanded")){
         content.addClass("expanded");
+    }
+});
+
+
+$(".close-content").click(function(d){
+	var content = $(this).parent();
+	$(".state-content").not(content).not(".hidden").hide(150);
+	
+	if(content.hasClass("expanded")){
+        content.removeClass("expanded");
+        $(".state-content").not(content).not(".hidden").show(100);
     }
 });
 
@@ -216,6 +225,22 @@ function singleSelectState(html, d) {
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 }
 
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+function titleCase(str) {
+	var splitStr = str.toLowerCase().replaceAll('_', ' ').split(' ');
+	for (var i = 0; i < splitStr.length; i++) {
+		// You do not need to check if i is larger than splitStr length, as your for does that for you
+		// Assign it back to the array
+		splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+	}
+	// Directly return the joined string
+	return splitStr.join(' '); 
+ }
+
 function reorderData(outOfOrder, d) {
 	console.log("JLM");
 	console.log(outOfOrder);
@@ -269,11 +294,14 @@ function multiSelectState(nodes, numNodes) {
     var stateAbbrs = [];
     var title = "Comparison of ";
     for (var i = 0; i < numNodes; i++) {
+		if(i == numNodes - 1){
+			title = title + " and "
+		}
         d[i] = nodes[i]["state"];
         title = title + stateMap[d[i].id]["name"];
         stateAbbrs[i] = stateMap[d[i].id]["abbr"]; //used for making html
-        if (i < numNodes - 1) {
-            title = title + " and "
+        if (i < numNodes - 1 && numNodes > 2) {
+            title = title + ", "
         }
     }
     $('#state-header').text(title);
@@ -284,6 +312,7 @@ function multiSelectState(nodes, numNodes) {
     var read = 0;
     multiSelectDataRetriever(d, numNodes, results, read);
 }
+
 
 //this is a really dumb function, but the only way I could get it to read all the
 //data was to call this function sequentially from the success of one to the next
@@ -382,7 +411,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		  .attr("x", -24)
 		  .attr("y", 9.5)
 		  .attr("dy", "0.35em")
-		  .text(d => d);
+		  .text(d => titleCase(d).replace('pc', ''));
 	};
 	
 	violent_xAxis = g => g
@@ -466,7 +495,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		  .attr("x", -24)
 		  .attr("y", 9.5)
 		  .attr("dy", "0.35em")
-		  .text(d => d);
+		  .text(d => titleCase(d).replace('pc', ''));
 	};
 	
 	violentpc_xAxis = g => g
@@ -553,7 +582,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		  .attr("x", -24)
 		  .attr("y", 9.5)
 		  .attr("dy", "0.35em")
-		  .text(d => d);
+		  .text(d => titleCase(d).replace('pc', ''));
 	};
 	
 	nonviolent_xAxis = g => g
@@ -637,7 +666,7 @@ function multiSelectChart(nodes, numNodes, results, read) {
 		  .attr("x", -24)
 		  .attr("y", 9.5)
 		  .attr("dy", "0.35em")
-		  .text(d => d);
+		  .text(d => titleCase(d).replace('pc', ''));
 	};
 	
 	nonviolentpc_xAxis = g => g

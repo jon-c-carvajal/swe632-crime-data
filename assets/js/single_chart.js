@@ -44,6 +44,7 @@ function populateDots(lineChartSvg, data, display_name, x_name, y_name, x, y, co
         })
         .attr("fill", color)
         .attr("stroke", "black")
+        .attr("crime-name", display_name)
         .on("mouseover", function (d) {
             div.transition()
                 .duration(1)
@@ -70,7 +71,8 @@ function drawLine(lineChartSvg, data, display_name, x_name, y_name, color, width
         .attr("d", line)
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", width + "px");
+        .attr("stroke-width", width + "px")
+        .attr("crime-name", display_name);
 
     lineChartSvg.append("path")
         .data(data)
@@ -78,11 +80,16 @@ function drawLine(lineChartSvg, data, display_name, x_name, y_name, color, width
         .attr("d", line)
         .attr("fill", "none")
         .attr("stroke", color)
-        .attr("stroke-width", (width - 1) + "px");
+        .attr("stroke-width", (width - 1) + "px")
+        .attr("crime-name", display_name);
 
 
 
     populateDots(lineChartSvg, estimates, display_name, x_name, y_name, x, y, color);
+}
+
+function toggleClass(d3_element, class_name){
+    d3_element.classed(class_name, !d3_element.classed(class_name));
 }
 
 function drawLegend(lineChartSvg, plotEntries) {
@@ -99,14 +106,22 @@ function drawLegend(lineChartSvg, plotEntries) {
         .attr("y", -1)
         .attr("width", 12)
         .attr("height", 12)
+        .attr("crime-name", function(d) { return d["display_name"]; })
         .style("fill", function (d, i) { return "black" });
+       
 
         legend3.append('rect')
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", 10)
         .attr("height", 10)
-        .style("fill", function (d, i) { return d["color"] });
+        .attr("crime-name", function(d) { return d["display_name"]; })
+        .style("fill", function (d, i) { return d["color"] })
+        .on("click", function(d) {
+            toggleClass(lineChartSvg.selectAll("rect[crime-name='" + d["display_name"] + "']"), "invisible-shape");
+            toggleClass(lineChartSvg.selectAll("path[crime-name='" + d["display_name"] + "']"), "invisible-shape");
+            toggleClass(lineChartSvg.selectAll("circle[crime-name='" + d["display_name"] + "']"), "invisible-shape");
+        });
 
 
     legend3.append('text')
