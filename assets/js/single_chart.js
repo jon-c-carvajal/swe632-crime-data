@@ -46,12 +46,14 @@ function populateDots(lineChartSvg, data, display_name, x_name, y_name, x, y, co
         .attr("stroke", "black")
         .attr("crime-name", display_name)
         .on("mouseover", function (d) {
-            div.transition()
-                .duration(1)
-                .style("opacity", .9);
-            div.html(display_name + "<br/>Year : " + d[[x_name]] + "<br/> Count : " + d[[y_name]])
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
+            if(!d3.select(this).classed("invisible-shape")){
+                div.transition()
+                    .duration(1)
+                    .style("opacity", .9);
+                div.html(display_name + "<br/>Year : " + d[[x_name]] + "<br/> Count : " + d[[y_name]])
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }
         })
         .on("mouseout", function (d) {
             div.transition()
