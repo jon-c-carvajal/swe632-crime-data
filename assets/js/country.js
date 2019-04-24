@@ -267,7 +267,7 @@ function reorderData(outOfOrder, d) {
 	perCapitaNumber = 1000;
 	
     inOrder.forEach(function(obj){
-        obj["rape"] = obj["rape_revised"] + obj["rape_legacy"];
+        obj["rape"] = obj["rape_revised"] | obj["rape_legacy"];
 		obj["aggravated_assaultpc"] = obj["aggravated_assault"] / obj["population"] * perCapitaNumber;
 		obj["arsonpc"] = obj["arson"] / obj["population"] * perCapitaNumber;
 		obj["burglarypc"] = obj["burglary"] / obj["population"] * perCapitaNumber;
@@ -456,7 +456,7 @@ function reorderData_add_gunData(outOfOrder) {
 	perCapitaNumber = 1000;
 	
     inOrder.forEach(function(obj){
-        obj["rape"] = obj["rape_revised"] + obj["rape_legacy"];
+        obj["rape"] = obj["rape_revised"] | obj["rape_legacy"];
 		obj["aggravated_assaultpc"] = obj["aggravated_assault"] / obj["population"] * perCapitaNumber;
 		obj["arsonpc"] = obj["arson"] / obj["population"] * perCapitaNumber;
 		obj["burglarypc"] = obj["burglary"] / obj["population"] * perCapitaNumber;
