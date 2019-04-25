@@ -182,11 +182,9 @@ function singleSelectState(html, d) {
     $("#state-content2").addClass("hidden").hide();
 	$("#state-content4").addClass("hidden").hide();
 	$("#state-content5").addClass("hidden").hide();
-    // var chartSvg1 = d3.select("#state-content1").select("svg");
-    // var chartSvg2 = d3.select("#state-content2").select("svg");
-
-    // chartSvg1.attr("width", 500).attr("height", 500);
-    // chartSvg2.attr("width", 500).attr("height", 800);
+	$("#state-content7").addClass("hidden").hide();
+	$("#state-content8").addClass("hidden").hide();
+	$("#state-content9").addClass("hidden").hide();
 
     var stateName = stateMap[d.id]["name"];
     var stateAbbr = stateMap[d.id]["abbr"];
@@ -250,6 +248,7 @@ function reorderData(outOfOrder, d) {
 	//Making a big assumption here. Since we only have last years data, we are using it and
 	// assuming it tracks with population of that state over time
 	var mostRecentNumberUnauthorizedImmigrants = stateMap[state_id].estimated_illegal_immigrants;
+	var num_guns_2017 = stateMap[state_id].num_guns_2017;
 	console.log(mostRecentNumberUnauthorizedImmigrants);
 	
     var inOrder = outOfOrder.results.sort(function (a, b){
@@ -278,6 +277,8 @@ function reorderData(outOfOrder, d) {
 		obj["rapepc"] = obj["rape"] / obj["population"] * perCapitaNumber;
 		obj["robberypc"] = obj["robbery"] / obj["population"] * perCapitaNumber;
 		obj["percentUnauthorizedImmigrant"] = mostRecentPercentageOfPopUnauthorized;
+		obj["num_guns_2017"] = num_guns_2017;
+		obj["num_guns_2017pc"] = num_guns_2017 / obj["population"] * perCapitaNumber;
     });
     return inOrder;
 }
@@ -370,7 +371,10 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	createMultiChart("#state-content2", violentpc_keys, violent_color(), results);
 	createMultiChart("#state-content3", nonviolent_keys, nonviolent_color(), results);
 	createMultiChart("#state-content4", nonviolentpc_keys, nonviolent_color(), results);
-	createImmigrationChart("#state-content5", results);
+	createViolentImmigrationChart("#state-content5", results);
+	createNonViolentImmigrationChart("#state-content7", results);
+	createViolentGunChart("#state-content8", results);
+	createNonViolentGunChart("#state-content9", results);
 }
 
 //pos = 0 is earliest year, 1 is next year, etc
