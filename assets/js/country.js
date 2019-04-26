@@ -179,13 +179,16 @@ function reset() {
 function singleSelectState(html, d) {
     if (active.node() === html) return reset();
 		
-    $("#state-content2").addClass("hidden").hide();
-	$("#state-content4").addClass("hidden").hide();
+    //$("#state-content2").addClass("hidden").hide();
+	//$("#state-content4").addClass("hidden").hide();
 	$("#state-content5").addClass("hidden").hide();
 	$("#state-content7").addClass("hidden").hide();
 	$("#state-content8").addClass("hidden").hide();
 	$("#state-content9").addClass("hidden").hide();
 
+	//Yang, hiding fake gun data chart for now
+	$("#state-content6").addClass("hidden").hide();
+	
     var stateName = stateMap[d.id]["name"];
     var stateAbbr = stateMap[d.id]["abbr"];
     $('#state-header').text(stateName);
@@ -248,7 +251,15 @@ function reorderData(outOfOrder, d) {
 	//Making a big assumption here. Since we only have last years data, we are using it and
 	// assuming it tracks with population of that state over time
 	var mostRecentNumberUnauthorizedImmigrants = stateMap[state_id].estimated_illegal_immigrants;
+	var num_guns_2018 = stateMap[state_id].num_guns_2018; //never actually used, as crime estimates currently only go to 2017
 	var num_guns_2017 = stateMap[state_id].num_guns_2017;
+	var num_guns_2016 = stateMap[state_id].num_guns_2016;
+	var num_guns_2015 = stateMap[state_id].num_guns_2015;
+	var num_guns_2014 = stateMap[state_id].num_guns_2014;
+	var num_guns_2013 = stateMap[state_id].num_guns_2013;
+	var num_guns_2012 = stateMap[state_id].num_guns_2012;
+	var num_guns_2011 = stateMap[state_id].num_guns_2011;
+	
 	console.log(mostRecentNumberUnauthorizedImmigrants);
 	
     var inOrder = outOfOrder.results.sort(function (a, b){
@@ -277,8 +288,91 @@ function reorderData(outOfOrder, d) {
 		obj["rapepc"] = obj["rape"] / obj["population"] * perCapitaNumber;
 		obj["robberypc"] = obj["robbery"] / obj["population"] * perCapitaNumber;
 		obj["percentUnauthorizedImmigrant"] = mostRecentPercentageOfPopUnauthorized;
+		
+		//used for multi state, only this year currently works
 		obj["num_guns_2017"] = num_guns_2017;
 		obj["num_guns_2017pc"] = num_guns_2017 / obj["population"] * perCapitaNumber;
+		
+		//this is trash, it actually puts all of these values in every year, and only during one year will it actually be correct. 
+		// but good enough for government work, especially since only one state, KY, is currently done
+		if (obj["year"] == "2017") {
+			obj["numGuns"] = num_guns_2017;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2017 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2017 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2017 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2017 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2017 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2017 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2017 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2017 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2017 * perCapitaNumber;
+		} else if (obj["year"] == "2016") {
+			obj["numGuns"] = num_guns_2016;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2016 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2016 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2016 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2016 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2016 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2016 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2016 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2016 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2016 * perCapitaNumber;
+		} else if (obj["year"] == "2015") {
+			obj["numGuns"] = num_guns_2015;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2015 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2015 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2015 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2015 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2015 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2015 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2015 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2015 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2015 * perCapitaNumber;
+		} else if (obj["year"] == "2014") {
+			obj["numGuns"] = num_guns_2014;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2014 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2014 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2014 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2014 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2014 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2014 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2014 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2014 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2014 * perCapitaNumber;
+		} else if (obj["year"] == "2013") {
+			obj["numGuns"] = num_guns_2013;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2013 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2013 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2013 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2013 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2013 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2013 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2013 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2013 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2013 * perCapitaNumber;
+		} else if (obj["year"] == "2012") {
+			obj["numGuns"] = num_guns_2012;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2012 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2012 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2012 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2012 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2012 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2012 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2012 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2012 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2012 * perCapitaNumber;
+		} else if (obj["year"] == "2011") {
+			obj["numGuns"] = num_guns_2011;
+			obj["aggravated_assaultpg"] = obj["aggravated_assault"] / num_guns_2011 * perCapitaNumber;
+			obj["arsonpg"] = obj["arson"] / num_guns_2011 * perCapitaNumber;
+			obj["burglarypg"] = obj["burglary"] / num_guns_2011 * perCapitaNumber;
+			obj["homicidepg"] = obj["homicide"] / num_guns_2011 * perCapitaNumber;
+			obj["larcenypg"] = obj["larceny"] / num_guns_2011 * perCapitaNumber;
+			obj["motor_vehicle_theftpg"] = obj["motor_vehicle_theft"] / num_guns_2011 * perCapitaNumber;
+			obj["property_crimepg"] = obj["property_crime"] / num_guns_2011 * perCapitaNumber;
+			obj["rapepg"] = obj["rape"] / num_guns_2011 * perCapitaNumber;
+			obj["robberypg"] = obj["robbery"] / num_guns_2011 * perCapitaNumber;
+		}
     });
     return inOrder;
 }
@@ -287,6 +381,8 @@ function multiSelectState(nodes, numNodes) {
 
 	// hide crime vs gun crime
 	$("#state-content6").addClass("hidden").hide();
+	$("#state-content10").addClass("hidden").hide();
+	$("#state-content11").addClass("hidden").hide();
 
     //Populate modal with svg
     console.log("in multiSelectState")
@@ -481,4 +577,20 @@ function reorderData_add_gunData(outOfOrder) {
 
     });
     return inOrder;
+}
+
+function removeNonGunYears(estimates) {
+	gunEstimates = [];
+	i = 0;
+	console.log("no");
+	estimates.forEach(function (obj){
+		if (parseInt(obj["year"]) > 2010) {
+			console.log("yes");
+			//obj = [];
+			gunEstimates[i] = obj;
+			i++;
+		}
+	});
+	
+	return gunEstimates;
 }

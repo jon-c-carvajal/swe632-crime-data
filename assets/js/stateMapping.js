@@ -102,7 +102,14 @@ var stateMap = {
 		"name": "Kentucky",
 		"abbr": "KY",
 		"estimated_illegal_immigrants" : 44000,
-		"num_guns_2017" : 81068
+		"num_guns_2018" : 85763,
+		"num_guns_2017" : 81068,
+		"num_guns_2016" : 72199,
+		"num_guns_2015" : 63628,
+		"num_guns_2014" : 59240,
+		"num_guns_2013" : 55670,
+		"num_guns_2012" : 49024,
+		"num_guns_2011" : 40500
 	},
 	"22": {
 		"name": "Louisiana",

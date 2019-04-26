@@ -10,6 +10,12 @@ var violentPlotEntriesPC = [{ "key": "aggravated_assaultpc", "display_name": "Ag
 { "key": "robberypc", "display_name": "Robbery","color": "mediumpurple" },
 { "key": "burglarypc", "display_name": "Burglary","color": "green" }];
 
+var violentPlotEntriesPG = [{ "key": "aggravated_assaultpg", "display_name": "Aggravated Assault", "color": "indianred" },
+{ "key": "homicidepg", "display_name": "Homicide","color": "dodgerblue" },
+{ "key": "rapepg", "display_name": "Rape","color": "khaki" },
+{ "key": "robberypg", "display_name": "Robbery","color": "mediumpurple" },
+{ "key": "burglarypg", "display_name": "Burglary","color": "green" }];
+
 var nonViolentPlotEntries = [{ "key": "larceny", "display_name": "Larceny", "color": "khaki" },
 { "key": "motor_vehicle_theft", "display_name": "Motor Vehicle Theft","color": "dodgerblue" },
 { "key": "arson", "display_name": "Arson","color": "indianred" },
@@ -19,6 +25,11 @@ var nonViolentPlotEntriesPC = [{ "key": "larcenypc", "display_name": "Larceny", 
 { "key": "motor_vehicle_theftpc", "display_name": "Motor Vehicle Theft","color": "dodgerblue" },
 { "key": "arsonpc", "display_name": "Arson","color": "indianred" },
 { "key": "property_crimepc", "display_name": "Property Crime","color": "mediumpurple" }];
+
+var nonViolentPlotEntriesPG = [{ "key": "larcenypg", "display_name": "Larceny", "color": "khaki" },
+{ "key": "motor_vehicle_theftpg", "display_name": "Motor Vehicle Theft","color": "dodgerblue" },
+{ "key": "arsonpg", "display_name": "Arson","color": "indianred" },
+{ "key": "property_crimepg", "display_name": "Property Crime","color": "mediumpurple" }];
 
 var gunPlotEntries = [{ "key": "aggravated_assault", "display_name": "Aggravated Assault", "color": "indianred" },
 { "key": "homicide", "display_name": "Homicide","color": "dodgerblue" },
@@ -146,10 +157,14 @@ function crimeEstimatesPlot(result, d, stateMapInfo){
     crimePlot("#state-content3", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"], nonViolentPlotEntries);
 	crimePlot("#state-content4", estimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 People", nonViolentPlotEntriesPC);
 
-    estimates = reorderData_add_gunData(result);
+    //estimates = reorderData_add_gunData(result);
     
-    crimePlot("#state-content6", estimates, stateMapInfo, "Crime vs Gun Crime of " + stateMapInfo["name"], gunPlotEntries);
-
+    //crimePlot("#state-content6", estimates, stateMapInfo, "Crime vs Gun Crime of " + stateMapInfo["name"], gunPlotEntries);
+	
+	gunEstimates = removeNonGunYears(estimates);
+	console.log(gunEstimates);
+	crimePlot("#state-content10", gunEstimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", violentPlotEntriesPG);
+	crimePlot("#state-content11", gunEstimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", nonViolentPlotEntriesPG);
 }
 
 function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries) {
