@@ -1,16 +1,42 @@
+function createSlider(svg, data, on_change){    
+    var margin = ({ top: 10, right: 10, bottom: 20, left: 40 });
+    var height = 550 - margin.top - margin.bottom;
+    var width = 850 - margin.left - margin.right;
+    var rangeValues = Object.keys(data);
+
+    var slider = d3
+    .sliderHorizontal()
+    .min(d3.min(rangeValues))
+    .max(d3.max(rangeValues))
+    .default(d3.max(rangeValues))
+    .step(1)
+    .width(300)
+    .tickFormat(function(d) {
+        return d.toString();
+    })
+    .displayValue(true)
+    .on('onchange', val => {
+      d3.select('#value').text(val);
+      on_change(val);
+    });
+
+    svg.append("g").attr("transform", `translate(${width/2 - 150},10)`).call(slider);
+}
 
 function createMultiChart(selector, violent_keys, violent_color, results) {
-    //can reuse these on all charts
     var margin = ({ top: 10, right: 10, bottom: 20, left: 40 });
     var height = 550 - margin.top - margin.bottom;
     var width = 850 - margin.left - margin.right;
 
+    var yearValues = Object.keys(results);
+
+
     var violent_y = d3.scaleLinear()
-        .domain([0, d3.max(results, d => d3.max(violent_keys, key => d[key]))]).nice()
+        .domain([0, d3.max(results[d3.max(yearValues)], d => d3.max(violent_keys, key => d[key]))]).nice()
         .rangeRound([height - margin.bottom, margin.top]);
 
     var violent_x0 = d3.scaleBand()
-        .domain(results.map(d => d["state_abbr"]))
+        .domain(results[d3.max(yearValues)].map(d => d["state_abbr"]))
         .rangeRound([margin.left, width - margin.right])
         .paddingInner(0.1);
 
@@ -50,13 +76,7 @@ function createMultiChart(selector, violent_keys, violent_color, results) {
 
     violent_yAxis = g => g
         .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(violent_y).ticks(null, "s"))
-        .call(g => g.select(".domain").remove())
-        .call(g => g.select(".tick:last-of-type text").clone()
-            .attr("x", 3)
-            .attr("text-anchor", "start")
-            .attr("font-weight", "bold")
-            .text("Number of Crimes"));
+        .call(d3.axisLeft(violent_y).ticks(null, "s"));
 
     //actually make svg
     const violent_barsvg = d3.select(selector).select("svg")
@@ -64,7 +84,7 @@ function createMultiChart(selector, violent_keys, violent_color, results) {
 
     violent_barsvg.append("g")
         .selectAll("g")
-        .data(results)
+        .data(results[d3.max(yearValues)])
         .join("g")
         .attr("transform", d => `translate(${violent_x0(d["state_abbr"])},0)`)
         .selectAll("rect")
@@ -79,12 +99,33 @@ function createMultiChart(selector, violent_keys, violent_color, results) {
     violent_barsvg.append("g")
         .call(violent_xAxis);
 
-    violent_barsvg.append("g")
+    var y = violent_barsvg.append("g")
         .call(violent_yAxis);
 
     violent_barsvg.append("g")
         .call(violent_legend);
 
+    //create slider with onchange
+    createSlider(d3.select(selector).select("svg"), results, function(value){
+        violent_barsvg
+        .selectAll("g")
+        .data(results[value])
+        .selectAll("g")
+        .data(results[value])
+        .selectAll("rect")
+        .data(d => violent_keys.map(key => ({ key, value: d[key] })))
+        .attr("y", d => violent_y(d.value))
+        .attr("height", d => violent_y(0) - violent_y(d.value))
+
+        violent_y.domain([0, d3.max(results[value], d => d3.max(violent_keys, key => d[key]))]).nice()
+        .rangeRound([height - margin.bottom, margin.top]);
+        
+        violent_yAxis = g => g
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(violent_y).ticks(null, "s"));
+
+        y.call(violent_yAxis);
+    });
 }
 
 function createViolentScatterPlotResults(results) {
@@ -146,6 +187,8 @@ function createViolentImmigrationChart(selector, results) {
     var margin = ({ top: 10, right: 10, bottom: 20, left: 40 });
     var height = 550 - margin.top - margin.bottom;
     var width = 850 - margin.left - margin.right;
+
+    var results = results[d3.max(Object.keys(results))]
 
     //reorganize data for scatter plot?
     //crime number, crime type, state?
@@ -272,12 +315,15 @@ function createNonViolentImmigrationChart(selector, results) {
     var height = 550 - margin.top - margin.bottom;
     var width = 850 - margin.left - margin.right;
 
+    var results = results[d3.max(Object.keys(results))]
+
     //reorganize data for scatter plot?
     //crime number, crime type, state?
     var scatterResults = createNonViolentScatterPlotResults(results);
     console.log(scatterResults);
     console.log(results);
 
+    
     //setup x
     var xValue = function (d) { return d["percentUnauthorizedImmigrant"]; };
     var xScale = d3.scaleLinear().range([0, width]);
@@ -400,6 +446,8 @@ function createViolentGunChart(selector, results) {
     var margin = ({ top: 10, right: 10, bottom: 20, left: 40 });
     var height = 550 - margin.top - margin.bottom;
     var width = 850 - margin.left - margin.right;
+
+    var results = results[d3.max(Object.keys(results))]
 
     //reorganize data for scatter plot?
     //crime number, crime type, state?
@@ -525,6 +573,8 @@ function createNonViolentGunChart(selector, results) {
     var margin = ({ top: 10, right: 10, bottom: 20, left: 40 });
     var height = 550 - margin.top - margin.bottom;
     var width = 850 - margin.left - margin.right;
+
+    var results = results[d3.max(Object.keys(results))]
 
     //reorganize data for scatter plot?
     //crime number, crime type, state?

@@ -476,9 +476,14 @@ function multiSelectChart(nodes, numNodes, results, read) {
 //pos = 0 is earliest year, 1 is next year, etc
 function singleYearData(data, numNodes, pos) {
 	console.log(data);
-	var results = [];
+	var results = {};
 	for (var i = 0; i < numNodes; i++) {
-		results[i] = data[i][pos];
+        for(var j = 0; j < data[i].length; j++){
+            if(!results[data[i][j].year]){
+                results[data[i][j].year] = []
+            }
+            results[data[i][j].year].push(data[i][j]);
+        }
 	}
 	return results;
 }
