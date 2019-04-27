@@ -108,6 +108,7 @@ function drawLegend(lineChartSvg, plotEntries) {
         .data(plotEntries)
         .enter().append('g')
         .attr("class", "legend")
+        .style("cursor", "pointer")
         .attr("transform", function (d, i) {
             return "translate(620," + (i * 20 + 30) + ")"
         });
@@ -118,6 +119,7 @@ function drawLegend(lineChartSvg, plotEntries) {
         .attr("width", 12)
         .attr("height", 12)
         .attr("crime-name", function(d) { return d["display_name"]; })
+        .style("cursor", "pointer")
         .style("fill", function (d, i) { return "black" });
        
 
