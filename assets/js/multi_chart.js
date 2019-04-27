@@ -23,8 +23,8 @@ function createSlider(svg, data, on_change){
     svg.append("g").attr("transform", `translate(${width/2 - 150},10)`).call(slider);
 }
 
-function createMultiChart(selector, violent_keys, violent_color, results) {
-    var margin = ({ top: 10, right: 10, bottom: 20, left: 40 });
+function createMultiChart(selector, violent_keys, violent_color, results, yAxisText) {
+    var margin = ({ top: 10, right: 10, bottom: 20, left: 45 });
     var height = 550 - margin.top - margin.bottom;
     var width = 850 - margin.left - margin.right;
 
@@ -104,6 +104,16 @@ function createMultiChart(selector, violent_keys, violent_color, results) {
 
     violent_barsvg.append("g")
         .call(violent_legend);
+
+    // text label for the y axis
+    violent_barsvg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -4)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .style("font-size", "14px")
+        .text(yAxisText);
 
     //create slider with onchange
     createSlider(d3.select(selector).select("svg"), results, function(value){
