@@ -27,32 +27,34 @@ $(document).keydown(function (event) {
     }
 });
 
-$(document).keyup(function () {
-    multiMode = false;
-    console.log(selectedNodes); //Do things
-    if (Object.keys(selectedNodes).length == 1) {
-        console.log("Single Element Selected");
-        var node = selectedNodes[Object.keys(selectedNodes)[0]];
-        singleSelectState(node["html"], node["state"]);
+$(document).keyup(function (event) {
+	if(event.which == "17"){
+		multiMode = false;
+		console.log(selectedNodes); //Do things
+		if (Object.keys(selectedNodes).length == 1) {
+			console.log("Single Element Selected");
+			var node = selectedNodes[Object.keys(selectedNodes)[0]];
+			singleSelectState(node["html"], node["state"]);
 
-        //Can someone explain why we set selectedNodes to {} here? -- Jordan
-        selectedNodes = {};
-    } else if (Object.keys(selectedNodes).length > 1) {
-        console.log("Multi Select deactivated, comparing selected elements");
-        //CALL COMPARISON FUNCTION HERE
+			//Can someone explain why we set selectedNodes to {} here? -- Jordan
+			selectedNodes = {};
+		} else if (Object.keys(selectedNodes).length > 1) {
+			console.log("Multi Select deactivated, comparing selected elements");
+			//CALL COMPARISON FUNCTION HERE
 
-        console.log(Object.keys(selectedNodes));
-        numNodes = Object.keys(selectedNodes).length;
-        var nodes = [];
-        for (var i = 0; i < numNodes; i++) {
-            nodes[i] = selectedNodes[Object.keys(selectedNodes)[i]];
-        }
-        console.log(nodes)
-        console.log("in keyup")
-        multiSelectState(nodes, numNodes);
+			console.log(Object.keys(selectedNodes));
+			numNodes = Object.keys(selectedNodes).length;
+			var nodes = [];
+			for (var i = 0; i < numNodes; i++) {
+				nodes[i] = selectedNodes[Object.keys(selectedNodes)[i]];
+			}
+			console.log(nodes)
+			console.log("in keyup")
+			multiSelectState(nodes, numNodes);
 
-    }
-    //Else do nothing
+		}
+	//Else do nothing
+	}
 });
 
 var api_key = "yAJchpcn7oDJXIWQQQxNvRAnqwne6Stw3ounmUCW";
