@@ -128,6 +128,7 @@ function drawLegend(lineChartSvg, plotEntries) {
         .attr("height", 10)
         .attr("crime-name", function(d) { return d["display_name"]; })
         .style("fill", function (d, i) { return d["color"] })
+        .style("cursor", "pointer")
         .on("click", function(d) {
             toggleClass(lineChartSvg.selectAll("rect[crime-name='" + d["display_name"] + "']"), "invisible-shape");
             toggleClass(lineChartSvg.selectAll("path[crime-name='" + d["display_name"] + "']"), "invisible-shape");
@@ -161,11 +162,11 @@ function crimeEstimatesPlot(result, d, stateMapInfo){
 	
 	gunEstimates = removeNonGunYears(estimates);
 	console.log(gunEstimates);
-	crimePlot("#state-content10", gunEstimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", violentPlotEntriesPG);
-	crimePlot("#state-content11", gunEstimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", nonViolentPlotEntriesPG);
+	crimePlot("#state-content10", gunEstimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", violentPlotEntriesPG, gunEstimates.length);
+	crimePlot("#state-content11", gunEstimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", nonViolentPlotEntriesPG, gunEstimates.length);
 }
 
-function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries) {
+function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries, numTicksX) {
     //putting in line chart
     var margin = { top: 20, right: 20, bottom: 30, left: 85 },
         width = 850 - margin.left - margin.right,
@@ -223,6 +224,10 @@ function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries) {
             return d3.timeFormat('%Y')(new Date(date, 1, 1, 1, 1, 1, 1));
         })
         .scale(x);
+    
+    if(numTicksX){
+        xAxis.ticks(numTicksX);
+    }
 
     lineChartSvg.append("g")
         .attr("class", "axis x")
