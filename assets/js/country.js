@@ -464,9 +464,9 @@ function multiSelectChart(nodes, numNodes, results, read) {
 	} 
 	
 	createMultiChart("#state-content1", violent_keys, violent_color(), results, "# of Violent Crimes");
-	createMultiChart("#state-content2", violentpc_keys, violent_color(), results, "% of Violent Crimes per 1000 people");
+	createMultiChart("#state-content2", violentpc_keys, violent_color(), results, "# of Violent Crimes per 1000 people");
 	createMultiChart("#state-content3", nonviolent_keys, nonviolent_color(), results, "# of Non-Violent Crimes");
-	createMultiChart("#state-content4", nonviolentpc_keys, nonviolent_color(), results, "% of Non-Violent Crimes per 1000 people");
+	createMultiChart("#state-content4", nonviolentpc_keys, nonviolent_color(), results, "# of Non-Violent Crimes per 1000 people");
 	createViolentImmigrationChart("#state-content5", results);
 	createNonViolentImmigrationChart("#state-content7", results);
 	createViolentGunChart("#state-content8", results);
