@@ -250,6 +250,6 @@ function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries) {
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Count");
+        .text("Number of Crimes");
 
 }

@@ -32,7 +32,7 @@ function createMultiChart(selector, violent_keys, violent_color, results, yAxisT
 
 
     var violent_y = d3.scaleLinear()
-        .domain([0, d3.max(results[d3.max(yearValues)], d => d3.max(violent_keys, key => d[key]))]).nice()
+        .domain([0, 1.3*d3.max(results[d3.max(yearValues)], d => d3.max(violent_keys, key => d[key]))]).nice()
         .rangeRound([height - margin.bottom, margin.top]);
 
     var violent_x0 = d3.scaleBand()
@@ -127,7 +127,7 @@ function createMultiChart(selector, violent_keys, violent_color, results, yAxisT
         .attr("y", d => violent_y(d.value))
         .attr("height", d => violent_y(0) - violent_y(d.value))
 
-        violent_y.domain([0, d3.max(results[value], d => d3.max(violent_keys, key => d[key]))]).nice()
+        violent_y.domain([0, 1.3*d3.max(results[value], d => d3.max(violent_keys, key => d[key]))]).nice()
         .rangeRound([height - margin.bottom, margin.top]);
         
         violent_yAxis = g => g
@@ -214,7 +214,7 @@ function createViolentImmigrationChart(selector, results) {
 
     // setup y
     var yValue = function (d) { return d["crime_amount"]; }; //scatterResults version
-    var yScale = d3.scaleLinear().range([height, 0]);
+    var yScale = d3.scaleLinear().range([1.3*height, 0]);
     var yMap = function (d) { return yScale(yValue(d)); };
     var yAxis = d3.axisLeft().scale(yScale);
 
@@ -342,7 +342,7 @@ function createNonViolentImmigrationChart(selector, results) {
 
     // setup y
     var yValue = function (d) { return d["crime_amount"]; }; //scatterResults version
-    var yScale = d3.scaleLinear().range([height, 0]);
+    var yScale = d3.scaleLinear().range([1.3*height, 0]);
     var yMap = function (d) { return yScale(yValue(d)); };
     var yAxis = d3.axisLeft().scale(yScale);
 
@@ -473,7 +473,7 @@ function createViolentGunChart(selector, results) {
 
     // setup y
     var yValue = function (d) { return d["crime_amount"]; }; //scatterResults version
-    var yScale = d3.scaleLinear().range([height, 0]);
+    var yScale = d3.scaleLinear().range([1.3*height, 0]);
     var yMap = function (d) { return yScale(yValue(d)); };
     var yAxis = d3.axisLeft().scale(yScale);
 
@@ -600,7 +600,7 @@ function createNonViolentGunChart(selector, results) {
 
     // setup y
     var yValue = function (d) { return d["crime_amount"]; }; //scatterResults version
-    var yScale = d3.scaleLinear().range([height, 0]);
+    var yScale = d3.scaleLinear().range([1.3*height, 0]);
     var yMap = function (d) { return yScale(yValue(d)); };
     var yAxis = d3.axisLeft().scale(yScale);
 
