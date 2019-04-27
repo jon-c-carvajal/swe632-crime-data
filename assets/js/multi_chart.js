@@ -12,7 +12,6 @@ function createSlider(svg, data, on_change){
     .default(d3.max(rangeValues))
     .step(1)
 	.width(700)
-    //.width(300)
     .tickFormat(function(d) {
         return d.toString();
     })
@@ -97,7 +96,17 @@ function createMultiChart(selector, violent_keys, violent_color, results, yAxisT
         .attr("y", d => violent_y(d.value))
         .attr("width", violent_x1.bandwidth())
         .attr("height", d => violent_y(0) - violent_y(d.value))
-        .attr("fill", d => violent_color(d.key));
+        .attr("fill", d => violent_color(d.key))
+        .on("mouseover", function (d) {
+            if(!d3.select(this).classed("invisible-shape")){
+                div.transition()
+                    .duration(1)
+                    .style("opacity", .9);
+                div.html(titleCase(d.key).replace('pc', '') + "<br/>Value: " + d.value)
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }
+        });
 
     violent_barsvg.append("g")
         .call(violent_xAxis);

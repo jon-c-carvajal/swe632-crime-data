@@ -96,8 +96,6 @@ function drawLine(lineChartSvg, data, display_name, x_name, y_name, color, width
         .attr("stroke-width", (width - 1) + "px")
         .attr("crime-name", display_name);
 
-
-
     populateDots(lineChartSvg, estimates, display_name, x_name, y_name, x, y, color);
 }
 

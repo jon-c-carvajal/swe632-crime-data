@@ -238,6 +238,7 @@ function titleCase(str) {
 		// Assign it back to the array
 		splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
 	}
+	
 	// Directly return the joined string
 	return splitStr.join(' '); 
  }
