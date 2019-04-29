@@ -164,8 +164,12 @@ function crimeEstimatesPlot(result, d, stateMapInfo){
 	
 	gunEstimates = removeNonGunYears(estimates);
 	console.log(gunEstimates);
-	crimePlot("#state-content10", gunEstimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", violentPlotEntriesPG, gunEstimates.length);
-	crimePlot("#state-content11", gunEstimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", nonViolentPlotEntriesPG, gunEstimates.length);
+	console.log("JLM1234");
+	console.log(d);
+	if (d.id == 21 ){ //check for KY only
+		crimePlot("#state-content10", gunEstimates, stateMapInfo, "Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", violentPlotEntriesPG, gunEstimates.length);
+		crimePlot("#state-content11", gunEstimates, stateMapInfo, "Non-Violent Crime Estimates of " + stateMapInfo["name"] + " Per 1000 Guns", nonViolentPlotEntriesPG, gunEstimates.length);
+	}
 }
 
 function crimePlot(svgId, estimates, stateMapInfo, title, plotEntries, numTicksX) {
