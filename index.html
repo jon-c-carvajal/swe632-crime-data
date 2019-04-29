@@ -16,8 +16,9 @@
 		<svg></svg>		
 	</div>
 	<div id="selection-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-		<div id="selection-background" style="height:100%; width:50%; position:absolute;"></div>
-		<div id="selection-modal-dialog" class="modal-dialog" role="document">
+		<div id="flex-container">
+		<div id="selection-background" class="flex-item"></div>
+		<div id="selection-modal-dialog" class="modal-dialog raw-item" role="document">
 			<div class="modal-content">
 
 				<div class="modal-header">
@@ -105,10 +106,11 @@
 							<svg></svg>
 						</div>
 					</div>
+				</div>
 			</div><!-- modal-content -->
 		</div><!-- modal-dialog -->
-	</div><!-- modal -->
-</div>
+	</div><!-- flex -->
+</div><!-- modal -->
 
   </body>
 	<script src="assets/js/import/jquery.min.js"></script>

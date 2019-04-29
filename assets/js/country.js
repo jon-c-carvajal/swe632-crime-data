@@ -152,7 +152,7 @@ function showModal() {
 
 function hideModal() {
     $(".state-content").removeClass('expanded');
-    $('#selection-modal-dialog').animate({ right: '-50%' }, function (){
+    $('#selection-modal-dialog').animate({ right: '-100%' }, function (){
         $('#state-header').text("");
         $(".state-content").removeClass('hidden');
         $(".state-content").show(250);
