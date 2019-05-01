@@ -48,11 +48,11 @@
     flex-direction: row;
 }
 
-#flex-container > .flex-item{
+#flex-container>.flex-item {
     flex: auto;
 }
 
-#flex-container > .raw-item{
+#flex-container>.raw-item {
     width: 50%;
     height: 100%;
     min-width: 960px;
@@ -61,6 +61,7 @@
 #selection-background {
     height: 100%;
 }
+
 
 /*#selection-background {
     height:100%; 
@@ -79,6 +80,7 @@
     -o-transform: translate3d(0%, 0, 0);
     transform: translate3d(0%, 0, 0);
 }
+
 
 /*
 #selection-modal-dialog {
@@ -125,6 +127,7 @@ div.tooltip {
 .state-content .close-content {
     position: absolute;
     cursor: pointer;
+    display: none;
     opacity: 0;
     left: 860px
 }
@@ -132,6 +135,7 @@ div.tooltip {
 .state-content.expanded .close-content {
     position: absolute;
     cursor: pointer;
+    display: inline-block;
     opacity: 1;
     left: 860px
 }
@@ -169,7 +173,7 @@ div.tooltip {
     transition: 0.3s;
 }
 
-.state-content.expanded > .state-content-screen {
+.state-content.expanded>.state-content-screen {
     height: 580px;
     width: 880px;
     opacity: 0;
@@ -177,7 +181,7 @@ div.tooltip {
     pointer-events: none;
 }
 
-.screen-label{
+.screen-label {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
