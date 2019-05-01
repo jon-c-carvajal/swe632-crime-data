@@ -120,7 +120,9 @@ function drawLegend(lineChartSvg, plotEntries) {
             return "translate(620," + (i * 20 + 30) + ")"
         });
 
-    legend3.append('rect')
+    var rectGrp = legend3.append('g');
+
+    rectGrp.append('rect')
         .attr("x", -1)
         .attr("y", -1)
         .attr("width", 12)
@@ -129,8 +131,7 @@ function drawLegend(lineChartSvg, plotEntries) {
         .style("cursor", "pointer")
         .style("fill", function(d, i) { return "black" });
 
-
-    legend3.append('rect')
+    rectGrp.append('rect')
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", 10)
@@ -144,6 +145,20 @@ function drawLegend(lineChartSvg, plotEntries) {
             toggleClass(lineChartSvg.selectAll("circle[crime-name='" + d["display_name"] + "']"), "invisible-shape");
         });
 
+    function repeat() {
+        rectGrp.transition() // apply a transition
+            .duration(2000) // apply it over 2000 milliseconds
+            .attr("transform", function(d, i) {
+                return "rotate(4)"
+            })
+            .transition() // apply a transition
+            .duration(2000) // apply it over 2000 milliseconds
+            .attr("transform", function(d, i) {
+                return "rotate(-4)"
+            }) // return the circle to 40 on the x axis
+            .on("end", repeat);;
+    }
+    repeat();
 
     legend3.append('text')
         .attr("x", 20)
