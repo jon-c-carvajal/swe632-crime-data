@@ -68,7 +68,12 @@ function populateDots(lineChartSvg, data, display_name, x_name, y_name, x, y, co
                 div.transition()
                     .duration(1)
                     .style("opacity", .9);
-                div.html(display_name + "<br/>Year : " + d[[x_name]] + "<br/> Count : " + d[[y_name]] + "<br/> # of Guns : " + d["numGuns"])
+                var str = display_name + "<br/>Year : " + d[[x_name]] + "<br/> Count : " + d[[y_name]];
+                if(d["numGuns"]){
+                    str += "<br/> # of Guns : " + d["numGuns"];
+                }
+
+                div.html(str)
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             }
@@ -144,21 +149,6 @@ function drawLegend(lineChartSvg, plotEntries) {
             toggleClass(lineChartSvg.selectAll("path[crime-name='" + d["display_name"] + "']"), "invisible-shape");
             toggleClass(lineChartSvg.selectAll("circle[crime-name='" + d["display_name"] + "']"), "invisible-shape");
         });
-
-    function repeat() {
-        rectGrp.transition() // apply a transition
-            .duration(2000) // apply it over 2000 milliseconds
-            .attr("transform", function(d, i) {
-                return "rotate(4)"
-            })
-            .transition() // apply a transition
-            .duration(2000) // apply it over 2000 milliseconds
-            .attr("transform", function(d, i) {
-                return "rotate(-4)"
-            }) // return the circle to 40 on the x axis
-            .on("end", repeat);;
-    }
-    repeat();
 
     legend3.append('text')
         .attr("x", 20)
