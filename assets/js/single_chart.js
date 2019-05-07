@@ -150,6 +150,23 @@ function drawLegend(lineChartSvg, plotEntries) {
             toggleClass(lineChartSvg.selectAll("circle[crime-name='" + d["display_name"] + "']"), "invisible-shape");
         });
 
+        /*
+    function repeat() {
+        rectGrp.transition() // apply a transition
+            .duration(2000) // apply it over 2000 milliseconds
+            .attr("transform", function(d, i) {
+                return "rotate(4)"
+            })
+            .transition() // apply a transition
+            .duration(2000) // apply it over 2000 milliseconds
+            .attr("transform", function(d, i) {
+                return "rotate(-4)"
+            }) // return the circle to 40 on the x axis
+            .on("end", repeat);;
+    }
+    repeat();
+*/
+
     legend3.append('text')
         .attr("x", 20)
         .attr("y", 10)
